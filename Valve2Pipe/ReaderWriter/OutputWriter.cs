@@ -1,0 +1,160 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using System.Threading.Tasks;
+
+
+namespace Valve2Pipe
+{
+  internal class OutputWriter
+  {
+    private List<Client_WriteStdin> WriterList;
+    public int Timeout_msec = 20 * 1000;
+    public bool HasWriter { get { return WriterList != null && 0 < WriterList.Count; } }
+
+
+    /// <summary>
+    /// ライターを閉じる
+    /// </summary>
+    ~OutputWriter()
+    {
+      Close();
+    }
+
+    public void Close()
+    {
+      if (HasWriter)
+        foreach (var one in WriterList)
+        {
+          if (one != null && one.StdinWriter != null)
+            one.StdinWriter.Close();
+        }
+    }
+
+
+
+    /// <summary>
+    /// WriterのPID取得        Valve2Pipe
+    /// </summary>
+    public int GetPID_FirstWriter()
+    {
+      if (HasWriter)
+        return WriterList[0].Process.Id;
+      else
+        return -1;
+    }
+
+
+
+    /// <summary>
+    /// ライター登録、実行
+    /// </summary>
+    /// <param name="newWriterList">実行するクライアント</param>
+    /// <returns>ライターが１つ以上起動したか</returns>
+    public bool RegisterWriter(List<Client_WriteStdin> newWriterList)
+    {
+      if (newWriterList == null) return false;
+
+      WriterList = new List<Client_WriteStdin>(newWriterList);
+      WriterList.Reverse();                                 //末尾から登録するので逆順に。
+
+      //プロセス実行
+      for (int i = WriterList.Count - 1; 0 <= i; i--)
+      {
+        var writer = WriterList[i];
+
+        //有効？
+        if (writer.bEnable <= 0) { WriterList.Remove(writer); continue; }
+
+        //実行
+        writer.Start_WriteStdin();
+
+        //実行失敗
+        if (writer.StdinWriter == null) { WriterList.Remove(writer); continue; }
+      }
+
+      return HasWriter;
+    }
+
+
+    /// <summary>
+    /// ファイル出力ライターの登録  デバッグ用
+    /// </summary>
+    public void Register_OutFileWriter(string path)
+    {
+      WriterList = WriterList ?? new List<Client_WriteStdin>();
+      WriterList.Add(new Client_OutFile(path));
+    }
+
+
+    /// <summary>
+    /// データを書込み
+    /// </summary>
+    /// <param name="writeData">書き込むデータ</param>
+    /// <returns>全てのクライアントに正常に書き込めたか</returns>
+    public bool WriteData(byte[] writeData)
+    {
+      var tasklist = new List<Task<bool>>();
+
+      //タスク作成、各プロセスに書込み
+      foreach (var oneWriter in WriterList)
+      {
+        var writeTask = Task<bool>.Factory.StartNew((arg) =>
+        {
+          var writer = (Client_WriteStdin)arg;
+          try
+          {
+            if (writer.Process.HasExited == false)
+              writer.StdinWriter.Write(writeData);         //書込み
+            else
+            {
+              //writerが終了している
+              return false;
+            }
+          }
+          catch (IOException)
+          {
+            return false;
+          }
+
+          return true;
+        }, oneWriter);       //引数oneWriterはtask.AsyncState経由で参照される。
+
+        tasklist.Add(writeTask);
+      }
+
+
+      //全タスクが完了するまで待機、タイムアウトＮ秒、-1で無期限待機
+      Task.WaitAll(tasklist.ToArray(), Timeout_msec);
+
+
+      //結果の確認
+      bool succeedWriting = true;
+      foreach (var task in tasklist)
+      {
+        //タスク処理が完了？
+        if (task.IsCompleted)
+        {
+          //task完了、書込み失敗
+          if (task.Result == false)
+          {
+            var writer = (Client_WriteStdin)task.AsyncState;
+            WriterList.Remove(writer);                     //WriterListから登録解除
+            succeedWriting = false;
+          }
+        }
+        else
+        {
+          //task未完了、クライアントがフリーズor処理が長い
+          var writer = (Client_WriteStdin)task.AsyncState;
+          WriterList.Remove(writer);                       //WriterListから登録解除
+          succeedWriting = false;
+
+        }
+      }
+
+      return succeedWriting;
+    }//func
+  }//class
+}
