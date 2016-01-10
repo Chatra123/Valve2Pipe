@@ -18,8 +18,8 @@ namespace Valve2Pipe
     public int iEncoder_CPU_Max;
     public int iSystem__CPU_Max;
 
-    public int iEncorder_MultipleRun;
-    public string sEncorderNames;
+    public int iEncoder_MultipleRun;
+    public string sEncoderNames;
     public double dReadLimit_MiBsec;
 
     public List<Client_WriteStdin> PresetEncoder;
@@ -42,8 +42,8 @@ namespace Valve2Pipe
       //初期設定
       iEncoder_CPU_Max = 20;
       iSystem__CPU_Max = 80;
-      iEncorder_MultipleRun = 1;
-      sEncorderNames = "  ffmeg   x264   x265  ";
+      iEncoder_MultipleRun = 1;
+      sEncoderNames = "  ffmeg   x264   x265  ";
       dReadLimit_MiBsec = 10.0;
       PresetEncoder = new List<Client_WriteStdin>();
     }

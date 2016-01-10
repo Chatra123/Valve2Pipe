@@ -9,7 +9,6 @@ using System.Text.RegularExpressions;
 using System.Diagnostics;
 
 
-
 namespace SplitVideo
 {
   using OctNov.IO;
@@ -35,8 +34,7 @@ namespace SplitVideo
     static void Main(string[] args)
     {
       ////test args
-      ////args = new string[] { @"E:\TS_PFDebug\    .ts" };
-      //args = new string[] { @"E:\TS_PFDebug\2300.ts" };
+      //args = new string[] { @"E:\TS_PFDebug\b60s.ts" };
       //args[0] = args[0].Trim();
 
       //カレントディレクトリ
@@ -244,7 +242,7 @@ namespace SplitVideo
         {
           var line = batText[i];
 
-          //FFmpeg    L-Smash remuxer
+          //FFmpeg  L-Smash remuxer
           {
             line = Regex.Replace(line, @"\$ffmpeg\$", FFmpegPath, RegexOptions.IgnoreCase);
             line = Regex.Replace(line, @"\$remuxer\$", LSM_remuxerPath, RegexOptions.IgnoreCase);
@@ -300,7 +298,7 @@ namespace SplitVideo
     /// </summary>
     /// <param name="framePath">フレームファイルパス</param>
     /// <returns>
-    /// 取得成功　→　リストをList<int>で返す。
+    /// 取得成功　→　List<int>
     /// 　　失敗　→　null
     /// </returns>
     private static List<int> FrameFile_to_List(string framePath)
@@ -344,7 +342,7 @@ namespace SplitVideo
 
       //エラーチェック
       if (frameList == null) return null;
-      if (frameList.Count % 2 == 1) return null;           //奇数ならエラー
+      if (frameList.Count % 2 == 1) return null;           //奇数個ならエラー
       return frameList;
     }
 

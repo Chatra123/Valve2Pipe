@@ -17,7 +17,7 @@ namespace LGLauncher
     /// <summary>
     /// 同時起動数の制限
     /// </summary>
-    public static bool GetReady(int multiRun, List<string> targetNames, bool enableCheck_SysIdle)
+    public static bool GetReady(int multiRun, List<string> targetNames, bool check_SysIdle)
     {
       if (multiRun <= 0) return false;
 
@@ -126,7 +126,7 @@ namespace LGLauncher
         }
 
         //ＣＰＵ使用率
-        if (enableCheck_SysIdle && SystemIsIdle() == false)
+        if (check_SysIdle && SystemIsIdle() == false)
         {
           Thread.Sleep(rand.Next(5 * 60 * 1000, 6 * 60 * 1000));     // 5  to  6 min
           continue;

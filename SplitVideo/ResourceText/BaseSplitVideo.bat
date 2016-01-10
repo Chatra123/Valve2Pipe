@@ -91,11 +91,11 @@ del /q "%ListPath%"
 
 ::
 ::　[[  L-Smash remuxer  ]]
-::    nero chapterを mp4に結合
+::    ogm chapterを mp4に結合
 ::  
 set remuxer="$remuxer$"
 set ChapterVideo="$AviWithoutExt$.chap%ext%"
-set nero="$AviWithoutExt$.nero.chapter"
+set nero="$AviWithoutExt$.ogm.chapter"
 
 if exist %remuxer% (
   if exist %nero% (
