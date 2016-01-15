@@ -83,7 +83,7 @@ namespace Valve2Pipe
           foreach (var arg in args)
             Console.Error.WriteLine(arg);
           Console.Error.WriteLine();
-          Console.Error.WriteLine("no input reader");
+          Console.Error.WriteLine("no input");
 
           Thread.Sleep(2 * 1000);
           return;
