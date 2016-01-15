@@ -65,7 +65,7 @@ namespace Valve2Pipe
         var writer = WriterList[i];
 
         //有効？
-        if (writer.bEnable <= 0) { WriterList.Remove(writer); continue; }
+        if (writer.Enable <= 0) { WriterList.Remove(writer); continue; }
 
         //実行
         writer.Start_WriteStdin();

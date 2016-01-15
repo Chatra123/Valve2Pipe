@@ -96,8 +96,8 @@ namespace Valve2Pipe
         //エンコーダープロセス数のチェック
         //  ffmpeg、x264が動作していたら終了するまで待機
         {
-          int multiRun = setting_file.iEncoder_MultipleRun;
-          var encorderNames = setting_file.sEncoderNames
+          int multiRun = setting_file.Encoder_MultipleRun;
+          var encorderNames = setting_file.EncoderNames
                                           .Split()                        //スペース分割
                                           .Where(ext => string.IsNullOrWhiteSpace(ext) == false)
                                           .Distinct()
@@ -132,9 +132,9 @@ namespace Valve2Pipe
         SendSpeedManager sendSpeed;
         {
           int pid = writer_pid;
-          int prc_CPU = setting_file.iEncoder_CPU_Max;
-          int sys_CPU = setting_file.iSystem__CPU_Max;
-          double max_speed = setting_file.dReadLimit_MiBsec;
+          int prc_CPU = setting_file.Encoder_CPU_Max;
+          int sys_CPU = setting_file.System__CPU_Max;
+          double max_speed = setting_file.ReadLimit_MiBsec;
           sendSpeed = new SendSpeedManager(pid, prc_CPU, sys_CPU, max_speed);
         }
 

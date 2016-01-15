@@ -68,8 +68,8 @@ namespace Valve2Pipe
 
         //sel_profileとsNameが完全一致　　（前後の空白を除いた後、文字列と長さが一致）
         var encorder = presetEncorder
-                        .Where((client) => 0 <= client.sName.ToLower().Trim().IndexOf(sel_profile))
-                        .Where((client) => sel_profile.Length == client.sName.ToLower().Trim().Length)
+                        .Where((client) => 0 <= client.Name.ToLower().Trim().IndexOf(sel_profile))
+                        .Where((client) => sel_profile.Length == client.Name.ToLower().Trim().Length)
                         .ToList();
         //先頭を取り出す
         encorder = encorder.Take(1).ToList();

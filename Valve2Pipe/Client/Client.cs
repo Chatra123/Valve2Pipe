@@ -21,22 +21,22 @@ namespace Valve2Pipe
     public static string Macro_SrcPath;
 
     //ＸＭＬに保存する値
-    public int bEnable = 1;
+    public int Enable = 1;
     public string memo = "      ";
-    public string sName = "  ";
-    public string sBasePath = "      ";
-    public string sBaseArgs1 = "      ";
-    public string sBaseArgs2 = "      ";
-    public string sBaseArgs3 = "      ";
+    public string Name = "  ";
+    public string BasePath = "      ";
+    public string BaseArgs1 = "      ";
+    public string BaseArgs2 = "      ";
+    public string BaseArgs3 = "      ";
 
 
-    public bool Enable { get { return 0 < bEnable; } }
+    public bool IsEnable { get { return 0 < Enable; } }
 
-    public string FileName { get { return Path.GetFileName(sBasePath).Trim(); } }
+    public string FileName { get { return Path.GetFileName(BasePath).Trim(); } }
 
     public override string ToString()
     {
-      return (string.IsNullOrWhiteSpace(sName) == false) ? sName : FileName;
+      return (string.IsNullOrWhiteSpace(Name) == false) ? Name : FileName;
     }
 
 
@@ -53,24 +53,24 @@ namespace Valve2Pipe
     protected Process CreateProcess(string sessionPath = null, string sessionArgs = null)
     {
       //チェック
-      if (bEnable <= 0) return null;
-      if (sBasePath == null) return null;
+      if (Enable <= 0) return null;
+      if (BasePath == null) return null;
 
       var prc = new Process();
 
       //Path
-      sBasePath = sBasePath ?? "";
-      sessionPath = sessionPath ?? sBasePath;              //sessionPathがなければsBasePathを使用
+      BasePath = BasePath ?? "";
+      sessionPath = sessionPath ?? BasePath;               //sessionPathがなければsBasePathを使用
       sessionPath = ReplaceMacro(sessionPath);             //マクロ置換
       sessionPath = sessionPath.Trim();
       if (string.IsNullOrWhiteSpace(sessionPath))
         return null;                                       //パスが無効
 
       //Arguments
-      sBaseArgs1 = sBaseArgs1 ?? "";
-      sBaseArgs2 = sBaseArgs2 ?? "";
-      sBaseArgs3 = sBaseArgs3 ?? "";
-      var sBaseArgs_123 = sBaseArgs1 + " " + sBaseArgs2 + " " + sBaseArgs3;
+      BaseArgs1 = BaseArgs1 ?? "";
+      BaseArgs2 = BaseArgs2 ?? "";
+      BaseArgs3 = BaseArgs3 ?? "";
+      var sBaseArgs_123 = BaseArgs1 + " " + BaseArgs2 + " " + BaseArgs3;
 
       sessionArgs = sessionArgs ?? sBaseArgs_123;            //sessionArgsがなければsBaseArgsを使用
       sessionArgs = ReplaceMacro(sessionArgs);               //マクロ置換
@@ -195,8 +195,8 @@ namespace Valve2Pipe
   {
     public Client_OutStdout()
     {
-      bEnable = 1;
-      sName = "stdout";
+      Enable = 1;
+      Name = "stdout";
       //ダミーのProcessを割り当てる。プロセスの生存チェック回避
       //if (client.Process.HasExited==false)を回避する。
       Process = Process.GetCurrentProcess();
@@ -213,7 +213,7 @@ namespace Valve2Pipe
   {
     public Client_OutFile(string filepath)
     {
-      bEnable = 1;
+      Enable = 1;
 
       //ダミーのProcessを割り当てる。プロセスの生存チェック回避
       //if (client.Process.HasExited==false)を回避する。

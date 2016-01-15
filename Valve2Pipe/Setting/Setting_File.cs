@@ -15,12 +15,12 @@ namespace Valve2Pipe
   [Serializable]
   public class Setting_File
   {
-    public int iEncoder_CPU_Max;
-    public int iSystem__CPU_Max;
+    public int Encoder_CPU_Max;
+    public int System__CPU_Max;
+    public double ReadLimit_MiBsec;
 
-    public int iEncoder_MultipleRun;
-    public string sEncoderNames;
-    public double dReadLimit_MiBsec;
+    public int Encoder_MultipleRun;
+    public string EncoderNames;
 
     public List<Client_WriteStdin> PresetEncoder;
 
@@ -40,11 +40,11 @@ namespace Valve2Pipe
     public Setting_File()
     {
       //初期設定
-      iEncoder_CPU_Max = 20;
-      iSystem__CPU_Max = 80;
-      iEncoder_MultipleRun = 1;
-      sEncoderNames = "  ffmeg   x264   x265  ";
-      dReadLimit_MiBsec = 10.0;
+      Encoder_CPU_Max = 20;
+      System__CPU_Max = 80;
+      Encoder_MultipleRun = 1;
+      EncoderNames = "  ffmeg   x264   x265  ";
+      ReadLimit_MiBsec = 10.0;
       PresetEncoder = new List<Client_WriteStdin>();
     }
 
@@ -91,21 +91,21 @@ namespace Valve2Pipe
         new Client_WriteStdin()
         {
           memo= "  動作確認　xvid  ",
-          sName = "  RunTest_avi  ",
-          sBasePath = @"   .\ffmpeg.exe   ",
-          sBaseArgs1 = "  -i pipe:0  -threads 1                                                        ",
-          sBaseArgs2 = "  -vcodec libxvid  -s 160x120 -b:v 128k -acodec libmp3lame -ar 48000 -b:a 64k  ",
-          sBaseArgs3 = "  -y  \"$fPathWithoutExt$.avi\"                                                  ",
+          Name = "  RunTest_avi  ",
+          BasePath = @"   .\ffmpeg.exe   ",
+          BaseArgs1 = "  -i pipe:0  -threads 1                                                        ",
+          BaseArgs2 = "  -vcodec libxvid  -s 160x120 -b:v 128k -acodec libmp3lame -ar 48000 -b:a 64k  ",
+          BaseArgs3 = "  -y  \"$fPathWithoutExt$.avi\"                                                  ",
         },
 
         new Client_WriteStdin()
         {
           memo= "  動作確認  x264  ",
-          sName = "  RunTest_mp4  ",
-          sBasePath = @"   .\ffmpeg.exe   ",
-          sBaseArgs1 = "  -i pipe:0  -threads 1                 ",
-          sBaseArgs2 = "  -vcodec libx264  -crf 40  -s 160x120  ",
-          sBaseArgs3 = "  -y  \"$fPathWithoutExt$.mp4\"           ",
+          Name = "  RunTest_mp4  ",
+          BasePath = @"   .\ffmpeg.exe   ",
+          BaseArgs1 = "  -i pipe:0  -threads 1                 ",
+          BaseArgs2 = "  -vcodec libx264  -crf 40  -s 160x120  ",
+          BaseArgs3 = "  -y  \"$fPathWithoutExt$.mp4\"           ",
         },
 
         ////new Client_WriteStdin()
