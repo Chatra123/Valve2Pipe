@@ -111,26 +111,26 @@ namespace Valve2Pipe
         ////new Client_WriteStdin()
         ////{
         ////  memo= "  xvid 256k  ",
-        ////  sName = "  RunTest_avi_2  ",
-        ////  sBasePath = @"   .\ffmpeg.exe   ",
-        ////  sBaseArgs1 = "  -i pipe:0  -threads 1                                                        ",
-        ////  sBaseArgs2 = "  -vcodec libxvid  -s 320x240 -b:v 256k -acodec libmp3lame -ar 48000 -b:a 64k  ",
-        ////  sBaseArgs3 = "  -y  \"$fPathWithoutExt$.avi\"                                                  ",
+        ////  Name = "  RunTest_avi_2  ",
+        ////  BasePath = @"   .\ffmpeg.exe   ",
+        ////  BaseArgs1 = "  -i pipe:0  -threads 1                                                        ",
+        ////  BaseArgs2 = "  -vcodec libxvid  -s 320x240 -b:v 256k -acodec libmp3lame -ar 48000 -b:a 64k  ",
+        ////  BaseArgs3 = "  -y  \"$fPathWithoutExt$.avi\"                                                  ",
         ////},
 
         ////new Client_WriteStdin()
         ////{
         ////  memo= "  copy to file  ",
-        ////  sName = "  copy  ",
-        ////  sBasePath = @"  .\Pipe2File.exe   ",
-        ////  sBaseArgs1 = "  \"$fPath$.Pipe2File_copy\"     ",
+        ////  Name = "  copy  ",
+        ////  BasePath = @"  .\Pipe2File.exe   ",
+        ////  BaseArgs1 = "  \"$fPath$.Pipe2File_copy\"     ",
         ////},   
     
         ////new Client_WriteStdin()
         ////{
         ////  memo= "  readonly  ",
-        ////  sName = "  readonly  ",
-        ////  sBasePath = @"  .\pipe2File.exe   ",
+        ////  Name = "  readonly  ",
+        ////  BasePath = @"  .\pipe2File.exe   ",
         ////},   
 
       };
