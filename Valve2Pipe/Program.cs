@@ -106,7 +106,7 @@ namespace Valve2Pipe
         }
 
 
-        //Encorder 起動
+        //Encoder 起動
         var writer = new OutputWriter();
         int writer_pid = -1;
         {
@@ -144,7 +144,7 @@ namespace Valve2Pipe
         {
           while (true)
           {
-            const int requestSize = 1024 * 100;                 //１回の読込み量
+            const int requestSize = 1024 * 100;                //１回の読込み量
 
             //read
             var readData = reader.ReadBytes(requestSize);
