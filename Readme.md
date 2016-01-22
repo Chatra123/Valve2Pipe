@@ -8,8 +8,8 @@
 
 ------------------------------------------------------------------
 ### 使い方
-
-Run_Valve2Pipe.batにTSファイルをドロップ  
+１．ffmpegをフォルダ内におく
+２．Run_Valve2Pipe.batにTSファイルをドロップ  
 
 
 ### 使い方　　コマンドライン
@@ -47,15 +47,15 @@ Valve2Pipe.exe  -pipe "C:\video.ts"  -profile RunTest_mp4
 ### 設定
 実行時に設定ファイルがなければ作成されます。  
 
-    Encoder_CPU_Max  20  
+    Encoder_CPU_Max  20.0  
 エンコーダープロセスのＣＰＵ使用率が２０％以下になるように転送量を調整します。  
 
 
-    System__CPU_Max  80  
+    System__CPU_Max  80.0  
 システム全体のＣＰＵ使用率が８０％以下になるように転送量を調整します。  
 
 
-    ReadLimit_MiBsec  10  
+    ReadLimit_MiBsec  10.0  
 ファイル読込速度を制限します。  
 
 
@@ -76,7 +76,7 @@ EncoderNamesで指定したプロセス名の同時起動数
 -----------------------------------------------------------------
 ### マクロ
 
-sBasePath、sBaseArgsで使えるマクロ  
+BasePath、BaseArgsで使えるマクロ  
 
 
 |  マクロ            |  説明                        |  例              |
@@ -91,14 +91,13 @@ sBasePath、sBaseArgsで使えるマクロ
 ------------------------------------------------------------------
 ### SplitVideo.exeについて
 
-作成したavi, mp4をLGLancherの生成したフレームファイルを元にカットします。
+作成したavi, mp4をLGLancherの生成したフレームファイルを元にカットします。  
+mp4ならばチャプター付mp4も作成します。 
 
 
 使い方  
  
  - 初期設定のままなら設定の変更は必要ありません。自動で処理されます。  
-
- - mp4ならばチャプター付mp4も作成します。 
 
 
 
@@ -118,14 +117,15 @@ Mono.Options
 
 ffmpeg  
 
-    https://www.ffmpeg.org/
-    https://github.com/FFmpeg/FFmpeg
+    Copyright (c) 2000-2015 the FFmpeg developers  
+    https://www.ffmpeg.org/  
+    https://github.com/FFmpeg/FFmpeg  
  
  
 remuxer  
 
-    Copyright (C) 2010-2015 L-SMASH project
-    https://github.com/l-smash
+    Copyright (C) 2010-2015 L-SMASH project  
+    https://github.com/l-smash  
  
  
  
