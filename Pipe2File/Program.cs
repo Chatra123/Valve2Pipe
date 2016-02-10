@@ -16,7 +16,6 @@ namespace Pipe2File
     {
       //  Mode_OutFile = true     ファイル出力
       //               = false    読込みのみ
-
       bool Mode_OutFile = false;
       string OutPath = "";
 

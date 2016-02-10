@@ -9,8 +9,6 @@ using System.Xml.Serialization;
 
 namespace Valve2Pipe
 {
-  using OctNov.Excp;
-
   class Program
   {
 
@@ -28,7 +26,7 @@ namespace Valve2Pipe
 
 
       //例外を捕捉する
-      AppDomain.CurrentDomain.UnhandledException += ExceptionInfo.OnUnhandledException;
+      AppDomain.CurrentDomain.UnhandledException += OctNov.Excp.ExceptionInfo.OnUnhandledException;
 
 
       //設定
