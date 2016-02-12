@@ -113,7 +113,7 @@ namespace Valve2Pipe
                                                 cmdline.Profile,              //コマンドライン指定のエンコーダー
                                                 setting_file.PresetEncoder);  //設定ファイルのエンコーダーの設定一覧
           writer.RegisterWriter(client);
-          writer.Timeout_msec = -1;
+          writer.Timeout = TimeSpan.FromMilliseconds(-1);
           writer_pid = (cmdline.Mode_Stdout) ? -1 : writer.GetPID_FirstWriter();
 
           if (writer.HasWriter == false)

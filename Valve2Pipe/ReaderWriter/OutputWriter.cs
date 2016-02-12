@@ -10,9 +10,8 @@ namespace Valve2Pipe
   internal class OutputWriter
   {
     private List<Client_WriteStdin> WriterList;
-    public int Timeout_msec = 20 * 1000;
+    public TimeSpan Timeout = TimeSpan.FromSeconds(20);
     public bool HasWriter { get { return WriterList != null && 0 < WriterList.Count; } }
-
 
     /// <summary>
     /// ライターを閉じる
@@ -33,7 +32,6 @@ namespace Valve2Pipe
     }
 
 
-
     /// <summary>
     /// WriterのPID取得        Valve2Pipe
     /// </summary>
@@ -44,7 +42,6 @@ namespace Valve2Pipe
       else
         return -1;
     }
-
 
 
     /// <summary>
@@ -65,7 +62,7 @@ namespace Valve2Pipe
         var writer = WriterList[i];
 
         //有効？
-        if (writer.Enable <= 0) { WriterList.Remove(writer); continue; }
+        if (writer.IsEnable == false) { WriterList.Remove(writer); continue; }
 
         //実行
         writer.Start_WriteStdin();
@@ -125,8 +122,8 @@ namespace Valve2Pipe
       }
 
 
-      //全タスクが完了するまで待機、タイムアウトＮ秒、-1で無期限待機
-      Task.WaitAll(tasklist.ToArray(), Timeout_msec);
+      //全タスクが完了するまで待機。Timeout = -1にはしないこと
+      Task.WaitAll(tasklist.ToArray(), Timeout);
 
 
       //結果の確認

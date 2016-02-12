@@ -10,7 +10,6 @@ namespace Valve2Pipe
 {
   class SelectReaderWriter
   {
-
     /// <summary>
     /// BinaryReader作成
     /// </summary>
@@ -61,7 +60,6 @@ namespace Valve2Pipe
       else
       {
         //コマンドラインで指定されたsel_profile を設定ファイルの presetEncorder から選択
-
         sel_profile = sel_profile ?? "";
         sel_profile = sel_profile.ToLower().Trim();
         presetEncorder = presetEncorder ?? new List<Client_WriteStdin>();
@@ -76,13 +74,7 @@ namespace Valve2Pipe
 
         return encorder;
       }
-
-
     }
-
-
-
-
 
 
 
