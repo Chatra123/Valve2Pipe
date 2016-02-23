@@ -8,8 +8,10 @@
 
 ------------------------------------------------------------------
 ### 使い方
-１．ffmpegをフォルダ内におく
-２．Run_Valve2Pipe.batにTSファイルをドロップ  
+
+1. ffmpegをフォルダ内におく
+2. Run_Valve2Pipe.batのショートカットを作成し、TSファイルをドロップ
+
 
 
 ### 使い方　　コマンドライン
@@ -115,13 +117,6 @@ Mono.Options
     Copyright (C) 2012 Xamarin Inc (http://www.xamarin.com)  
 
 
-ffmpeg  
-
-    Copyright (c) 2000-2015 the FFmpeg developers  
-    https://www.ffmpeg.org/  
-    https://github.com/FFmpeg/FFmpeg  
- 
- 
 remuxer  
 
     Copyright (C) 2010-2015 L-SMASH project  
