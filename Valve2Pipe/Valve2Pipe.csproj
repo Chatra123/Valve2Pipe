@@ -22,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <NoWarn>CS0436</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -42,11 +43,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LGLauncher\MutexControl.cs" />
     <Compile Include="SendSpeedManager.cs" />
     <Compile Include="ReaderWriter\SelectReaderWriter.cs" />
     <Compile Include="ReaderWriter\OutputWriter.cs" />
     <Compile Include="Exception\ExceptionInfo.cs" />
-    <Compile Include="LGLauncher\WaitForSystemIdle.cs" />
+    <Compile Include="LGLauncher\WaitForSystemReady.cs" />
     <Compile Include="Client\Client.cs" />
     <Compile Include="Setting\Setting_File.cs" />
     <Compile Include="Setting\XmlRW.cs" />

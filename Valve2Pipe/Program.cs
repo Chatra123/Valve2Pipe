@@ -89,6 +89,7 @@ namespace Valve2Pipe
       }
 
 
+      LGLauncher.WaitForSystemReady waitForReady = null;
       try
       {
         //エンコーダープロセス数のチェック
@@ -100,7 +101,11 @@ namespace Valve2Pipe
                                           .Where(ext => string.IsNullOrWhiteSpace(ext) == false)
                                           .Distinct()
                                           .ToList();
-          LGLauncher.WaitForSystemIdle.GetReady(multiRun, encorderNames, false);           //セマフォ取得
+          //セマフォ取得
+          waitForReady = new LGLauncher.WaitForSystemReady();
+          waitForReady.GetReady(encorderNames,
+                                multiRun,
+                                false);
         }
 
 
@@ -139,32 +144,27 @@ namespace Valve2Pipe
         //
         // 転送
         //
+        while (true)
         {
-          while (true)
-          {
-            const int requestSize = 1024 * 100;                //１回の読込み量
-
-            //read
-            var readData = reader.ReadBytes(requestSize);
-            if (readData.Length == 0) break;                   //ファイル終端
-
-            //送信速度　調整
-            sendSpeed.Update_and_Sleep(readData.Length);
-
-            //write
-            writer.WriteData(readData);
-            if (writer.HasWriter == false) break;
-
-          }
-
-          reader.Close();
-          writer.Close();
+          const int requestSize = 1024 * 100;                //１回の読込み量
+          //read
+          var readData = reader.ReadBytes(requestSize);
+          if (readData.Length == 0) break;                   //ファイル終端
+          //送信速度　調整
+          sendSpeed.Update_and_Sleep(readData.Length);
+          //write
+          writer.WriteData(readData);
+          if (writer.HasWriter == false) break;
         }
+        reader.Close();
+        writer.Close();
 
       }
       finally
       {
-        LGLauncher.WaitForSystemIdle.ReleaseSemaphore();                           //セマフォ解放
+        //セマフォ解放
+        if (waitForReady != null)
+          waitForReady.Release();
       }
 
     }

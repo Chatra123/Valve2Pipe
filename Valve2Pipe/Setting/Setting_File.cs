@@ -15,15 +15,15 @@ namespace Valve2Pipe
   [Serializable]
   public class Setting_File
   {
+    const double CurrentVer = 2.0;
+
+    public double Ver = 0.0;
     public int Encoder_CPU_Max;
     public int System__CPU_Max;
     public double ReadLimit_MiBsec;
-
     public int Encoder_MultipleRun;
     public string EncoderNames;
-
     public List<Client_WriteStdin> PresetEncoder;
-
 
     //設定ファイル名
     private static readonly string
@@ -59,7 +59,6 @@ namespace Valve2Pipe
       if (string.IsNullOrEmpty(xmlpath))
       {
         xmlpath = Default_XmlPath;
-
         if (File.Exists(xmlpath) == false)
         {
           //設定ファイル作成
@@ -70,12 +69,14 @@ namespace Valve2Pipe
 
       var file = XmlRW.Load<Setting_File>(xmlpath);
 
-      XmlRW.Save(xmlpath, file);                //古いバージョンのファイルなら新たに追加された項目がxmlに加わる。
-
-
+      //新たに追加された項目、削除された項目を書き換え。
+      if (file.Ver != CurrentVer)
+      {
+        file.Ver = CurrentVer;
+        XmlRW.Save(xmlpath, file);
+      }
       return file;
     }
-
 
 
     /// <summary>
@@ -87,7 +88,6 @@ namespace Valve2Pipe
 
       setting.PresetEncoder = new List<Client_WriteStdin>()
       {
-
         new Client_WriteStdin()
         {
           memo= "  動作確認　xvid  ",
@@ -107,45 +107,9 @@ namespace Valve2Pipe
           BaseArgs2 = "  -vcodec libx264  -crf 40  -s 160x120  ",
           BaseArgs3 = "  -y  \"$fPathWithoutExt$.mp4\"           ",
         },
-
-        ////new Client_WriteStdin()
-        ////{
-        ////  memo= "  xvid 256k  ",
-        ////  Name = "  RunTest_avi_2  ",
-        ////  BasePath = @"   .\ffmpeg.exe   ",
-        ////  BaseArgs1 = "  -i pipe:0  -threads 1                                                        ",
-        ////  BaseArgs2 = "  -vcodec libxvid  -s 320x240 -b:v 256k -acodec libmp3lame -ar 48000 -b:a 64k  ",
-        ////  BaseArgs3 = "  -y  \"$fPathWithoutExt$.avi\"                                                  ",
-        ////},
-
-        ////new Client_WriteStdin()
-        ////{
-        ////  memo= "  copy to file  ",
-        ////  Name = "  copy  ",
-        ////  BasePath = @"  .\Pipe2File.exe   ",
-        ////  BaseArgs1 = "  \"$fPath$.Pipe2File_copy\"     ",
-        ////},   
-    
-        ////new Client_WriteStdin()
-        ////{
-        ////  memo= "  readonly  ",
-        ////  Name = "  readonly  ",
-        ////  BasePath = @"  .\pipe2File.exe   ",
-        ////},   
-
       };
       return setting;
     }
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -54,19 +54,16 @@ namespace Valve2Pipe
       if (newWriterList == null) return false;
 
       WriterList = new List<Client_WriteStdin>(newWriterList);
-      WriterList.Reverse();                                 //末尾から登録するので逆順に。
+      WriterList.Reverse();
 
       //プロセス実行
       for (int i = WriterList.Count - 1; 0 <= i; i--)
       {
         var writer = WriterList[i];
-
         //有効？
         if (writer.IsEnable == false) { WriterList.Remove(writer); continue; }
-
         //実行
         writer.Start_WriteStdin();
-
         //実行失敗
         if (writer.StdinWriter == null) { WriterList.Remove(writer); continue; }
       }
@@ -105,10 +102,7 @@ namespace Valve2Pipe
             if (writer.Process.HasExited == false)
               writer.StdinWriter.Write(writeData);         //書込み
             else
-            {
-              //writerが終了している
               return false;
-            }
           }
           catch (IOException)
           {
@@ -147,11 +141,12 @@ namespace Valve2Pipe
           var writer = (Client_WriteStdin)task.AsyncState;
           WriterList.Remove(writer);                       //WriterListから登録解除
           succeedWriting = false;
-
         }
       }
 
       return succeedWriting;
-    }//func
-  }//class
+    }
+
+
+  }
 }

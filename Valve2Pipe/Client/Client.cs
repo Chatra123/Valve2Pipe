@@ -29,16 +29,12 @@ namespace Valve2Pipe
     public string BaseArgs2 = "      ";
     public string BaseArgs3 = "      ";
 
-
     public bool IsEnable { get { return 0 < Enable; } }
-
     public string FileName { get { return Path.GetFileName(BasePath).Trim(); } }
-
     public override string ToString()
     {
       return (string.IsNullOrWhiteSpace(Name) == false) ? Name : FileName;
     }
-
 
     [XmlIgnore]
     public Process Process { get; protected set; }
@@ -46,13 +42,11 @@ namespace Valve2Pipe
     [XmlIgnore]
     public BinaryWriter StdinWriter { get; protected set; }
 
-
     /// <summary>
     /// プロセス作成
     /// </summary>
     protected Process CreateProcess(string sessionPath = null, string sessionArgs = null)
     {
-      //チェック
       if (Enable <= 0) return null;
       if (BasePath == null) return null;
 
@@ -60,7 +54,7 @@ namespace Valve2Pipe
 
       //Path
       BasePath = BasePath ?? "";
-      sessionPath = sessionPath ?? BasePath;               //sessionPathがなければsBasePathを使用
+      sessionPath = sessionPath ?? BasePath;               //sessionPathがなければBasePathを使用
       sessionPath = ReplaceMacro(sessionPath);             //マクロ置換
       sessionPath = sessionPath.Trim();
       if (string.IsNullOrWhiteSpace(sessionPath))
@@ -70,23 +64,20 @@ namespace Valve2Pipe
       BaseArgs1 = BaseArgs1 ?? "";
       BaseArgs2 = BaseArgs2 ?? "";
       BaseArgs3 = BaseArgs3 ?? "";
-      var sBaseArgs_123 = BaseArgs1 + " " + BaseArgs2 + " " + BaseArgs3;
+      var BaseArgs_123 = BaseArgs1 + " " + BaseArgs2 + " " + BaseArgs3;
 
-      sessionArgs = sessionArgs ?? sBaseArgs_123;            //sessionArgsがなければsBaseArgsを使用
+      sessionArgs = sessionArgs ?? BaseArgs_123;             //sessionArgsがなければBaseArgsを使用
       sessionArgs = ReplaceMacro(sessionArgs);               //マクロ置換
       sessionArgs = sessionArgs.Trim();
 
       prc.StartInfo.FileName = sessionPath;
       prc.StartInfo.Arguments = sessionArgs;
-
       return prc;
     }
 
     /// <summary>
     /// 引数のマクロを置換
     /// </summary>
-    /// <param name="before">置換前の値</param>
-    /// <returns>置換後の値</returns>
     protected string ReplaceMacro(string before)
     {
       if (string.IsNullOrEmpty(before)) return before;
@@ -96,20 +87,17 @@ namespace Valve2Pipe
       //ファイルパス
       {
         Macro_SrcPath = Macro_SrcPath ?? "";
-
         string fPath = Macro_SrcPath;
         string fDir = Path.GetDirectoryName(fPath);
         string fName = Path.GetFileName(fPath);
         string fNameWithoutExt = Path.GetFileNameWithoutExtension(fPath);
         string fPathWithoutExt = Path.Combine(fDir, fNameWithoutExt);
-
         after = Regex.Replace(after, @"\$fPath\$", fPath, RegexOptions.IgnoreCase);
         after = Regex.Replace(after, @"\$fDir\$", fDir, RegexOptions.IgnoreCase);
         after = Regex.Replace(after, @"\$fName\$", fName, RegexOptions.IgnoreCase);
         after = Regex.Replace(after, @"\$fNameWithoutExt\$", fNameWithoutExt, RegexOptions.IgnoreCase);
         after = Regex.Replace(after, @"\$fPathWithoutExt\$", fPathWithoutExt, RegexOptions.IgnoreCase);
       }
-
       return after;
     }
 
@@ -151,18 +139,16 @@ namespace Valve2Pipe
       Process.StartInfo.RedirectStandardOutput = false;
 
       //標準エラー
-      //CreateLwiのバッファが詰まるのでfalse or 非同期で取り出す
-      //　falseだとコンソールに表示されるので非同期で取り出して捨てる
+      //  バッファが詰まるのでfalse or 非同期で取り出す
+      //　falseだとコンソールに表示される
       Process.StartInfo.RedirectStandardError = true;
       //標準エラーを取り出す。
       Process.ErrorDataReceived += (o, e) =>
       {
-        //Pipe2Pipeはそのまま表示する
+        //Valve2Pipeはそのまま表示する
         if (e.Data != null)
           Console.Error.WriteLine(e.Data);
-
       };
-
 
       //プロセス実行
       bool launch;
@@ -171,7 +157,6 @@ namespace Valve2Pipe
         launch = Process.Start();
         StdinWriter = new BinaryWriter(Process.StandardInput.BaseStream);      //同期　　書き込み用ライター
         Process.BeginErrorReadLine();                                          //非同期　標準エラーを取得
-
       }
       catch (Exception)
       {
@@ -218,7 +203,6 @@ namespace Valve2Pipe
       //ダミーのProcessを割り当てる。プロセスの生存チェック回避
       //if (client.Process.HasExited==false)を回避する。
       Process = Process.GetCurrentProcess();
-
       StdinWriter = CreateOutFileWriter(filepath);
     }
 

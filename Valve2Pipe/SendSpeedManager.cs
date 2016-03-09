@@ -42,15 +42,12 @@ namespace Valve2Pipe
     double tickSendSize = 0;                     //単位時間の送信量
     int tickBeginTime = 0;                       //計測開始時間
 
-
     //System Checker
     BlackProcessChecker blackChecker = null;
     ProcessBusyChecker busyChecker = null;
 
     //  last system check time
     int timeCheckBlack = 0, timeCheckBusy = 0;
-
-
 
     /// <summary>
     /// SystemChecker初期化
@@ -70,12 +67,10 @@ namespace Valve2Pipe
           blacklistPath = Path.Combine(AppDir, AppName + ".txt");
         }
 
-        var SIM_setting_file = new SystemIdleMonitor.Setting_File();
-
         //ブラックリスト読込み
+        var SIM_setting_file = new SystemIdleMonitor.Setting_File();
         SIM_setting_file.Load(blacklistPath,
                               Setting_BlackList_Default.Valve2Pipe);
-
         blackChecker = new BlackProcessChecker(SIM_setting_file.ProcessList);
       }
 
@@ -109,11 +104,9 @@ namespace Valve2Pipe
           if (blackChecker.ExistBlack())
           {
             timeCheckBlack = Environment.TickCount;
-
             Thread.Sleep(11 * 1000);
             continue;
           }
-
         break;
       }
 
@@ -128,7 +121,6 @@ namespace Valve2Pipe
         if (busyChecker.IsBusy())
         {
           SendLimit -= SendLimit * Delta;
-
           //////log4net
           ////string limit_KBsec = (SendLimit / 1024).ToString("F3");
           ////log.Info("  --SendLimit = " + limit_KBsec + " KB/sec");
@@ -141,13 +133,11 @@ namespace Valve2Pipe
           //　SendLimitが大きいと戻すのにも時間がかかる。
           //－－
           //　送信量と比べて SendLimitがかなり大きいなら減らす。
-
           double ticklimit = SendLimit * (200.0 / 1000.0);
 
           if (ticklimit * 0.95 < tickSendSize)
           {
             SendLimit += SendLimit * Delta;
-
             //////log4net
             ////string limit_KBsec = (SendLimit / 1024).ToString("F3");
             ////log.Info("  ++SendLimit = " + limit_KBsec + " KB/sec");
@@ -155,12 +145,10 @@ namespace Valve2Pipe
           else if (tickSendSize < ticklimit * 0.70)
           {
             SendLimit -= SendLimit * Delta;
-
             //////log4net
             ////string limit_KBsec = (SendLimit / 1024).ToString("F3");
             ////log.Info("  --SendLimit = " + limit_KBsec + " KB/sec");
           }
-
         }
       }
 
@@ -184,7 +172,6 @@ namespace Valve2Pipe
             //////log4net
             ////int sleep = (int)(200 - tickDuration);
             ////log.Info("        sleep = " + sleep);
-
             Thread.Sleep((int)(200 - tickDuration));
           }
       }

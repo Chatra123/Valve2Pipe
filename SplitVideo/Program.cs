@@ -13,7 +13,6 @@ namespace SplitVideo
 {
   using OctNov.IO;
 
-
   class Program
   {
     //アプリパス
@@ -54,14 +53,12 @@ namespace SplitVideo
       var framePath = Path.Combine(TsDir, TsNameWithoutExt + ".frame.txt");
       var frameList = FrameFile_to_List(framePath);
 
-      //　読込み失敗？
       if (frameList == null)
       {
         Console.Error.WriteLine("invalid frameList");
         Thread.Sleep(2000);
         return;
       }
-
 
 
       //batファイル作成
@@ -75,7 +72,6 @@ namespace SplitVideo
         //  List<string>  →  string
         string batString = "";
         batText.ForEach((line) => { batString += line + Environment.NewLine; });
-
 
         //bat はshift-jisで保存
         //UTF-8で保存すると実行時に日本語ファイルが取り扱えない。
@@ -105,7 +101,6 @@ namespace SplitVideo
       }
 
     }
-
 
 
     /// <summary>
@@ -176,7 +171,6 @@ namespace SplitVideo
       CutAvi_ShortPath = Path.Combine(TsDir, AviShortName + ".cut" + AviExt);
       CutAvi_Name = TsNameWithoutExt + ".cut" + AviExt;
 
-
       //show path
       Console.Error.WriteLine("TsPath    =" + TsPath);
       Console.Error.WriteLine("AviPath   =" + AviPath);
@@ -184,14 +178,12 @@ namespace SplitVideo
       Console.Error.WriteLine();
       Console.Error.WriteLine();
 
-
       //ファイルチェック
       //  Video
       if (File.Exists(AviPath) == false)
       {
         return "not found Video";
       }
-
       //　FFmpeg
       if (File.Exists(FFmpegPath) == false)
       {
@@ -203,14 +195,11 @@ namespace SplitVideo
     }
 
 
-
-
     /// <summary>
     /// フレームリスト　→　バッチテキスト
     /// <summary>
     private static List<string> CreateBatText(List<int> frameList)
     {
-
       //フレームリスト　→　開始、終了秒数
       var BeginSec = new List<int>();
       var EndSec = new List<int>();
@@ -229,7 +218,6 @@ namespace SplitVideo
         EndSec.Add((int)endSec);
         DurationSec.Add((int)durSec);
       }
-
 
       //バッチテキスト
       var batText = new List<string>();
@@ -252,12 +240,9 @@ namespace SplitVideo
           {
             line = Regex.Replace(line, @"\$PartCount\$", "" + PartCount, RegexOptions.IgnoreCase);
             line = Regex.Replace(line, @"\$ext\$", AviExt, RegexOptions.IgnoreCase);
-
             line = Regex.Replace(line, @"\$AviPath\$", AviPath, RegexOptions.IgnoreCase);
             line = Regex.Replace(line, @"\$AviShort\$", AviShortName, RegexOptions.IgnoreCase);
-
             line = Regex.Replace(line, @"\$AviWithoutExt\$", AviWithoutExt, RegexOptions.IgnoreCase);
-
             //Rename CutAvi
             line = Regex.Replace(line, @"\$CutAvi_ShortPath\$", CutAvi_ShortPath, RegexOptions.IgnoreCase);
             line = Regex.Replace(line, @"\$CutAvi_Name\$", CutAvi_Name, RegexOptions.IgnoreCase);
@@ -277,7 +262,6 @@ namespace SplitVideo
             string begin_sec = @"\$BeginSecP" + partNo + @"\$";
             string end_sec = @"\$EndSecP" + partNo + @"\$";
             string duration_sec = @"\$DurSecP" + partNo + @"\$";
-
             line = Regex.Replace(line, begin_sec, "" + BeginSec[idx], RegexOptions.IgnoreCase);
             line = Regex.Replace(line, end_sec, "" + EndSec[idx], RegexOptions.IgnoreCase);
             line = Regex.Replace(line, duration_sec, "" + DurationSec[idx], RegexOptions.IgnoreCase);
@@ -287,10 +271,8 @@ namespace SplitVideo
           batText[i] = line;
         }
       }
-
       return batText;
     }
-
 
 
     /// <summary>
