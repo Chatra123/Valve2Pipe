@@ -89,7 +89,7 @@ namespace LGLauncher
           prc.StartInfo.CreateNoWindow = true;
           prc.StartInfo.UseShellExecute = false;
           prc.Start();
-          prc.WaitForExit(5 * 60 * 1000);
+          prc.WaitForExit(2 * 60 * 1000);
         }
         return prc.HasExited && prc.ExitCode == 0;
       });
