@@ -43,7 +43,6 @@ namespace Valve2Pipe
             Console.Error.WriteLine(arg);
           Console.Error.WriteLine();
           Console.Error.WriteLine("CmdLine Parse error");
-
           Thread.Sleep(2 * 1000);
           return;
         }
@@ -82,7 +81,6 @@ namespace Valve2Pipe
             Console.Error.WriteLine(arg);
           Console.Error.WriteLine();
           Console.Error.WriteLine("no input");
-
           Thread.Sleep(2 * 1000);
           return;
         }
@@ -124,7 +122,6 @@ namespace Valve2Pipe
           if (writer.HasWriter == false)
           {
             Console.Error.WriteLine("no output writer");
-
             Thread.Sleep(2 * 1000);
             return;
           }

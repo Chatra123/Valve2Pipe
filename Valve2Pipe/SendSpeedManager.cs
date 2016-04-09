@@ -40,14 +40,14 @@ namespace Valve2Pipe
 
     //速度計算用
     double tickSendSize = 0;                     //単位時間の送信量
-    int tickBeginTime = 0;                       //計測開始時間
+    DateTime tickBeginTime;                      //計測開始時間
 
     //System Checker
     BlackProcessChecker blackChecker = null;
     ProcessBusyChecker busyChecker = null;
 
     //  last system check time
-    int timeCheckBlack = 0, timeCheckBusy = 0;
+    DateTime timeCheckBlack, timeCheckBusy;
 
     /// <summary>
     /// SystemChecker初期化
@@ -100,10 +100,10 @@ namespace Valve2Pipe
       //ブラックプロセスが停止するまで待機
       while (true)
       {
-        if (10 * 1000 < Environment.TickCount - timeCheckBlack)
+        if (10 * 1000 <(DateTime.Now - timeCheckBlack).TotalMilliseconds)
           if (blackChecker.ExistBlack())
           {
-            timeCheckBlack = Environment.TickCount;
+            timeCheckBlack = DateTime.Now;
             Thread.Sleep(11 * 1000);
             continue;
           }
@@ -112,10 +112,10 @@ namespace Valve2Pipe
 
       //ＣＰＵ使用率が高いか？
       //  制限速度を調整
-      if (500 < Environment.TickCount - timeCheckBusy)
+      if (500 < (DateTime.Now - timeCheckBusy).TotalMilliseconds)
       {
-        timeCheckBusy = Environment.TickCount;
-        const double Delta = 0.01;                //SendLimit増減値   500 msに１回 １％増減
+        timeCheckBusy = DateTime.Now;
+        const double Delta = 0.01;                //SendLimit増減値   500ms毎に１％増減
 
         //Is Busy ?
         if (busyChecker.IsBusy())
@@ -133,7 +133,7 @@ namespace Valve2Pipe
           //　SendLimitが大きいと戻すのにも時間がかかる。
           //－－
           //　送信量と比べて SendLimitがかなり大きいなら減らす。
-          double ticklimit = SendLimit * (200.0 / 1000.0);
+          double ticklimit = SendLimit * (200.0 / 1000.0);  // 200ms間の送信上限サイズ
 
           if (ticklimit * 0.95 < tickSendSize)
           {
@@ -156,11 +156,10 @@ namespace Valve2Pipe
       //送信速度制限
       {
         //計測開始からの経過時間
-        double tickDuration = Environment.TickCount - tickBeginTime;
-
+        double tickDuration = (DateTime.Now - tickBeginTime).TotalMilliseconds;
         if (200 < tickDuration)      //Nmsごとにカウンタリセット
         {
-          tickBeginTime = Environment.TickCount;
+          tickBeginTime = DateTime.Now;
           tickSendSize = 0;
         }
 

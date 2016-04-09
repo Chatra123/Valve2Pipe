@@ -15,9 +15,9 @@ namespace Valve2Pipe
   [Serializable]
   public class Setting_File
   {
-    const double CurrentVer = 2.0;
+    const double CurrentRev = 11.1;
 
-    public double Ver = 0.0;
+    public double Rev = 0.0;
     public int Encoder_CPU_Max;
     public int System__CPU_Max;
     public double ReadLimit_MiBsec;
@@ -70,9 +70,9 @@ namespace Valve2Pipe
       var file = XmlRW.Load<Setting_File>(xmlpath);
 
       //新たに追加された項目、削除された項目を書き換え。
-      if (file.Ver != CurrentVer)
+      if (file.Rev != CurrentRev)
       {
-        file.Ver = CurrentVer;
+        file.Rev = CurrentRev;
         XmlRW.Save(xmlpath, file);
       }
       return file;

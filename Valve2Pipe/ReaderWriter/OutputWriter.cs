@@ -7,10 +7,13 @@ using System.Threading.Tasks;
 
 namespace Valve2Pipe
 {
+  /// <summary>
+  /// クライアントの標準入力に書き込む
+  /// </summary>
   internal class OutputWriter
   {
     private List<Client_WriteStdin> WriterList;
-    public TimeSpan Timeout = TimeSpan.FromSeconds(20);
+    public TimeSpan Timeout = TimeSpan.FromSeconds(10);
     public bool HasWriter { get { return WriterList != null && 0 < WriterList.Count; } }
 
     /// <summary>
@@ -100,16 +103,20 @@ namespace Valve2Pipe
           try
           {
             if (writer.Process.HasExited == false)
-              writer.StdinWriter.Write(writeData);         //書込み
+            {
+               //書
+              writer.StdinWriter.Write(writeData);
+              return true;
+            }
             else
               return false;
+
           }
           catch (IOException)
           {
             return false;
           }
 
-          return true;
         }, oneWriter);       //引数oneWriterはtask.AsyncState経由で参照される。
 
         tasklist.Add(writeTask);
@@ -121,7 +128,7 @@ namespace Valve2Pipe
 
 
       //結果の確認
-      bool succeedWriting = true;
+      bool success = true;
       foreach (var task in tasklist)
       {
         //タスク処理が完了？
@@ -130,23 +137,24 @@ namespace Valve2Pipe
           //task完了、書込み失敗
           if (task.Result == false)
           {
+            success = false;
             var writer = (Client_WriteStdin)task.AsyncState;
-            WriterList.Remove(writer);                     //WriterListから登録解除
-            succeedWriting = false;
+            writer.StdinWriter.Close();
+            WriterList.Remove(writer);
           }
         }
         else
         {
           //task未完了、クライアントがフリーズor処理が長い
+          success = false;
           var writer = (Client_WriteStdin)task.AsyncState;
-          WriterList.Remove(writer);                       //WriterListから登録解除
-          succeedWriting = false;
+          writer.StdinWriter.Close();
+          WriterList.Remove(writer);
         }
       }
 
-      return succeedWriting;
-    }
+      return success;
 
-
-  }
+    }//func
+  }//class
 }
