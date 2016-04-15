@@ -83,7 +83,7 @@ BasePath、BaseArgsで使えるマクロ
 |  マクロ             |  説明                     |  例               |
 |:--------------------|:--------------------------|:----------------- |
 |  $fPath$            |  入力ファイルパス         |  C:\rec\news.ts   |
-|  $fDir$             |  ディレクトリ名           |  C:\rec           |
+|  $fDir$             |  ディレクトリパス         |  C:\rec           |
 |  $fName$            |  ファイル名               |  news.ts          |
 |  $fNameWithoutExt$  |  拡張子なしファイル名     |  news             |
 |  $fPathWithoutExt$  |  拡張子なしファイルパス   |  C:\rec\news      |

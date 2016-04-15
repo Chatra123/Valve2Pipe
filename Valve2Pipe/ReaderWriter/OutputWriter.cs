@@ -114,6 +114,7 @@ namespace Valve2Pipe
           }
           catch (IOException)
           {
+            //clientが終了して、パイプが破壊された。
             return false;
           }
 
