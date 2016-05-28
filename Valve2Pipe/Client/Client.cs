@@ -17,7 +17,7 @@ namespace Valve2Pipe
   [Serializable]
   public class Client
   {
-    //マクロ用の値
+    //マクロ置換用の値  簡単のためstaticで保持
     public static string Macro_SrcPath;
 
     //ＸＭＬに保存する値
@@ -54,8 +54,8 @@ namespace Valve2Pipe
 
       //Path
       BasePath = BasePath ?? "";
-      sessionPath = sessionPath ?? BasePath;               //sessionPathがなければBasePathを使用
-      sessionPath = ReplaceMacro(sessionPath);             //マクロ置換
+      sessionPath = sessionPath ?? BasePath;
+      sessionPath = ReplaceMacro(sessionPath); 
       sessionPath = sessionPath.Trim();
       if (string.IsNullOrWhiteSpace(sessionPath))
         return null;                                       //パスが無効
@@ -66,8 +66,8 @@ namespace Valve2Pipe
       BaseArgs3 = BaseArgs3 ?? "";
       var BaseArgs_123 = BaseArgs1 + " " + BaseArgs2 + " " + BaseArgs3;
 
-      sessionArgs = sessionArgs ?? BaseArgs_123;             //sessionArgsがなければBaseArgsを使用
-      sessionArgs = ReplaceMacro(sessionArgs);               //マクロ置換
+      sessionArgs = sessionArgs ?? BaseArgs_123;
+      sessionArgs = ReplaceMacro(sessionArgs);
       sessionArgs = sessionArgs.Trim();
 
       prc.StartInfo.FileName = sessionPath;
@@ -100,8 +100,6 @@ namespace Valve2Pipe
       }
       return after;
     }
-
-
 
   }
 
