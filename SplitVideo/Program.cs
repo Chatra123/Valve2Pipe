@@ -33,7 +33,7 @@ namespace SplitVideo
     static void Main(string[] args)
     {
       ////test args
-      //args = new string[] { @"E:\TS_PFDebug\b60s.ts" };
+      //args = new string[] { @"E:\TS_PFDebug\n60s.ts" };
       //args[0] = args[0].Trim();
 
       //カレントディレクトリ
@@ -223,7 +223,7 @@ namespace SplitVideo
       var batText = new List<string>();
       {
         //Resource読込み
-        batText = FileR.ReadFromResource("SplitVideo.ResourceText.BaseSplitVideo.bat");
+        batText = FileR.ReadFromResource("SplitVideo.ResourceText.SplitVideo.bat");
 
         //置換
         for (int i = 0; i < batText.Count; i++)

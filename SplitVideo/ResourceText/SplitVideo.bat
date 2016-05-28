@@ -38,14 +38,13 @@ set ListPath="$AviShort$$ext$.catlist.txt"
 
 :: check ffmpeg
 if not exist %ffmpeg% (
-  exit
+   exit /b
 )
 
 
 ::
 :: [ split ]
 ::
-
 ::part1::   %ffmpeg% -ss $BeginSecP1$  -i %SrcVideo%  -threads 1  -filter_complex trim=duration=$DurSecP1$,setpts=PTS-STARTPTS;atrim=duration=$DurSecP1$,asetpts=PTS-STARTPTS    -y "%P1%"
 ::part2::   %ffmpeg% -ss $BeginSecP2$  -i %SrcVideo%  -threads 1  -filter_complex trim=duration=$DurSecP2$,setpts=PTS-STARTPTS;atrim=duration=$DurSecP2$,asetpts=PTS-STARTPTS    -y "%P2%"
 ::part3::   %ffmpeg% -ss $BeginSecP3$  -i %SrcVideo%  -threads 1  -filter_complex trim=duration=$DurSecP3$,setpts=PTS-STARTPTS;atrim=duration=$DurSecP3$,asetpts=PTS-STARTPTS    -y "%P3%"
@@ -61,7 +60,6 @@ if not exist %ffmpeg% (
 ::
 :: [ concat ]
 ::
-
 ::  テキストの作成、中身をクリア
 echo. >%ListPath%
 
@@ -99,7 +97,6 @@ set nero="$AviWithoutExt$.ogm.chapter"
 
 if exist %remuxer% (
   if exist %nero% (
-
        timeout /t 2 /nobreak
        %remuxer% -i %SrcVideo% --chapter %nero% -o %ChapterVideo%
   )
@@ -110,7 +107,7 @@ if exist %remuxer% (
 endlocal
 ::  timeout /t 5 /nobreak
 ::  pause
-  exit
+::  exit /b
 
 
 

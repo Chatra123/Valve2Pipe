@@ -43,7 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Text\FileRW.cs" />
-    <EmbeddedResource Include="ResourceText\BaseSplitVideo.bat" />
+    <EmbeddedResource Include="ResourceText\SplitVideo.bat" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
