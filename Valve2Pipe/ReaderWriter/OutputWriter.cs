@@ -104,7 +104,7 @@ namespace Valve2Pipe
           {
             if (writer.Process.HasExited == false)
             {
-               //書
+              //書
               writer.StdinWriter.Write(writeData);
               return true;
             }
@@ -114,7 +114,7 @@ namespace Valve2Pipe
           }
           catch (IOException)
           {
-            //clientが終了して、パイプが破壊された。
+            //IOException:パイプは終了しました。
             return false;
           }
 
