@@ -1,7 +1,7 @@
 ﻿
 ## Valve2Pipe
 
-ファイル又は、パイプからデータを取得しエンコーダーに転送します。
+ファイル又は、標準入力からデータを取得しエンコーダーに転送します。
 転送量を調整することでエンコーダーのＣＰＵ使用率を一定に保ちます。
 
 
@@ -19,7 +19,7 @@
 ファイル  
 Valve2Pipe.exe  "C:\video.ts"        -profile RunTest_mp4
 
-パイプ  
+標準入力  
 Valve2Pipe.exe  -pipe "C:\video.ts"  -profile RunTest_mp4
 
 
@@ -32,7 +32,7 @@ Valve2Pipe.exe  -pipe "C:\video.ts"  -profile RunTest_mp4
 置換マクロで"C:\video.ts"が使用されます。
 
     -pipe  "C:\video.ts"
-パイプ入力
+標準入力
 置換マクロで"C:\video.ts"が使用されます。
 
 
