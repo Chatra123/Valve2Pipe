@@ -17,7 +17,7 @@ namespace Valve2Pipe
   [Serializable]
   public class Client
   {
-    //マクロ置換用の値  簡単のためstaticで保持
+    //マクロ用の値  簡単なのでstaticで保持
     public static string Macro_SrcPath;
 
     //ＸＭＬに保存する値
@@ -28,6 +28,7 @@ namespace Valve2Pipe
     public string BaseArgs1 = "      ";
     public string BaseArgs2 = "      ";
     public string BaseArgs3 = "      ";
+    public string BaseArgs4 = "      ";
 
     public bool IsEnable { get { return 0 < Enable; } }
     public string FileName { get { return Path.GetFileName(BasePath).Trim(); } }
@@ -45,7 +46,7 @@ namespace Valve2Pipe
     /// <summary>
     /// プロセス作成
     /// </summary>
-    protected Process CreateProcess(string sessionPath = null, string sessionArgs = null)
+    protected Process CreateProcess()
     {
       if (Enable <= 0) return null;
       if (BasePath == null) return null;
@@ -53,27 +54,33 @@ namespace Valve2Pipe
       var prc = new Process();
 
       //Path
-      BasePath = BasePath ?? "";
-      sessionPath = sessionPath ?? BasePath;
-      sessionPath = ReplaceMacro(sessionPath); 
-      sessionPath = sessionPath.Trim();
-      if (string.IsNullOrWhiteSpace(sessionPath))
-        return null;                                       //パスが無効
+      string sessionPath;  //マクロ置換後のパス
+      {
+        sessionPath = BasePath ?? "";
+        sessionPath = ReplaceMacro(sessionPath);
+        sessionPath = sessionPath.Trim();
+        if (string.IsNullOrWhiteSpace(sessionPath))
+          return null;                               //パスが無効
+      }
 
-      //Arguments
-      BaseArgs1 = BaseArgs1 ?? "";
-      BaseArgs2 = BaseArgs2 ?? "";
-      BaseArgs3 = BaseArgs3 ?? "";
-      var BaseArgs_123 = BaseArgs1 + " " + BaseArgs2 + " " + BaseArgs3;
+      //Args
+      string sessionArgs;  //マクロ置換後の引数
+      {
+        BaseArgs1 = BaseArgs1 ?? "";
+        BaseArgs2 = BaseArgs2 ?? "";
+        BaseArgs3 = BaseArgs3 ?? "";
+        BaseArgs4 = BaseArgs4 ?? "";
 
-      sessionArgs = sessionArgs ?? BaseArgs_123;
-      sessionArgs = ReplaceMacro(sessionArgs);
-      sessionArgs = sessionArgs.Trim();
+        sessionArgs = BaseArgs1 + BaseArgs2 + BaseArgs3 + BaseArgs4;
+        sessionArgs = ReplaceMacro(sessionArgs);
+        sessionArgs = sessionArgs.Trim();
+      }
 
       prc.StartInfo.FileName = sessionPath;
       prc.StartInfo.Arguments = sessionArgs;
       return prc;
     }
+
 
     /// <summary>
     /// 引数のマクロを置換
@@ -85,7 +92,7 @@ namespace Valve2Pipe
       string after = before;
 
       /*
-       * r12からRecName_Macro.dllと同じようなマクロに変更＆追加した。
+       * r12からRecName_Macro.dllと同じマクロ名に変更＆追加した。
        * 
        * ファイルパス　（フルパス）       $fPath$           --> $FilePath$                    C:\rec\news.ts
        * フォルダパス  （最後に\はなし）  $fDir$            --> $FolderPath$                  C:\rec
@@ -139,14 +146,12 @@ namespace Valve2Pipe
     /// <summary>
     /// プロセス実行  標準入力に書き込む
     /// </summary>
-    /// <param name="sessionPath">今回のみ使用するファイルパス</param>
-    /// <param name="sessionArgs">今回のみ使用する引数</param>
     /// <returns>プロセスが実行できたか</returns>
-    public bool Start_WriteStdin(string sessionArgs = null)
+    public bool Start_WriteStdin()
     {
       //Client_OutStdoutは既にダミープロセスを割り当て済み。
       //this.Processに直接いれず、prcを経由する。
-      var prc = CreateProcess(null, sessionArgs);
+      var prc = CreateProcess();
       if (prc == null) return false;               //Process起動失敗
 
       Process = prc;
@@ -206,7 +211,6 @@ namespace Valve2Pipe
       Enable = 1;
       Name = "stdout";
       //ダミーのProcessを割り当てる。プロセスの生存チェック回避
-      //if (client.Process.HasExited==false)を回避する。
       Process = Process.GetCurrentProcess();
 
       StdinWriter = new BinaryWriter(Console.OpenStandardOutput());
@@ -224,7 +228,6 @@ namespace Valve2Pipe
       Enable = 1;
 
       //ダミーのProcessを割り当てる。プロセスの生存チェック回避
-      //if (client.Process.HasExited==false)を回避する。
       Process = Process.GetCurrentProcess();
       StdinWriter = CreateOutFileWriter(filepath);
     }

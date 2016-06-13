@@ -15,7 +15,7 @@ namespace Valve2Pipe
   [Serializable]
   public class Setting_File
   {
-    const double CurrentRev = 11.1;
+    const double CurrentRev = 12.0;
 
     public double Rev = 0.0;
     public int Encoder_CPU_Max;
@@ -93,9 +93,10 @@ namespace Valve2Pipe
           memo= "  動作確認　xvid  ",
           Name = "  RunTest_avi  ",
           BasePath = @"   .\ffmpeg.exe   ",
-          BaseArgs1 = "  -i pipe:0  -threads 1                                                        ",
-          BaseArgs2 = "  -vcodec libxvid  -s 160x120 -b:v 128k -acodec libmp3lame -ar 48000 -b:a 64k  ",
-          BaseArgs3 = "  -y  \"$fPathWithoutExt$.avi\"                                                  ",
+          BaseArgs1 = " -i pipe:0  -threads 1                     ",
+          BaseArgs2 = " -vcodec libxvid    -s  160x120 -b:v 128k  ",
+          BaseArgs3 = " -acodec libmp3lame -ar 48000   -b:a  64k  ",
+          BaseArgs4 = " -y  \"$FilePathWithoutExt$.avi\"            ",
         },
 
         new Client_WriteStdin()
@@ -103,9 +104,10 @@ namespace Valve2Pipe
           memo= "  動作確認  x264  ",
           Name = "  RunTest_mp4  ",
           BasePath = @"   .\ffmpeg.exe   ",
-          BaseArgs1 = "  -i pipe:0  -threads 1                 ",
-          BaseArgs2 = "  -vcodec libx264  -crf 40  -s 160x120  ",
-          BaseArgs3 = "  -y  \"$fPathWithoutExt$.mp4\"           ",
+          BaseArgs1 = " -i pipe:0  -threads 1                     ",
+          BaseArgs2 = " -vcodec libx264    -s 160x120  -crf 40    ",
+          BaseArgs3 = "                                           ",
+          BaseArgs4 = " -y  \"$FilePathWithoutExt$.mp4\"            ",
         },
       };
       return setting;
