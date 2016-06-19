@@ -29,11 +29,12 @@ Valve2Pipe.exe  -pipe "C:\video.ts"  -profile RunTest_mp4
 
     -file  "C:\video.ts"
 入力ファイルパス
-置換マクロで"C:\video.ts"が使用されます。
+マクロ$FilePath$はC:\video.tsに置換されます。
+
 
     -pipe  "C:\video.ts"
 標準入力
-置換マクロで"C:\video.ts"が使用されます。
+マクロ$FilePath$はC:\video.tsに置換されます。
 
 
     -profile RunTest_mp4
@@ -47,7 +48,6 @@ Valve2Pipe.exe  -pipe "C:\video.ts"  -profile RunTest_mp4
 
 ------------------------------------------------------------------
 ### 設定
-実行時に設定ファイルがなければ作成します。  
 
     Encoder_CPU_Max  20.0  
 エンコーダープロセスのＣＰＵ使用率が２０％以下になるように転送量を調整します。  
@@ -65,6 +65,7 @@ Valve2Pipe.exe  -pipe "C:\video.ts"  -profile RunTest_mp4
 エンコーダーの同時起動数  
 エンコーダープロセスが１未満になるまで実行開始を遅らせます。
 
+
     EncoderNames    ffmpeg   x264   x265  
 エンコーダー名を指定します。同時起動数の制限用  
 
@@ -80,13 +81,13 @@ Valve2Pipe.exe  -pipe "C:\video.ts"  -profile RunTest_mp4
 
 BasePath、BaseArgsで使えるマクロ  
 
-|  マクロ             |  説明                     |  例               |
-|:--------------------|:--------------------------|:----------------- |
-|  $fPath$            |  入力ファイルパス         |  C:\rec\news.ts   |
-|  $fDir$             |  ディレクトリパス         |  C:\rec           |
-|  $fName$            |  ファイル名               |  news.ts          |
-|  $fNameWithoutExt$  |  拡張子なしファイル名     |  news             |
-|  $fPathWithoutExt$  |  拡張子なしファイルパス   |  C:\rec\news      |
+|  マクロ                |  マクロ  r11まで    |  説明                     |  例               |
+|:-----------------------|:--------------------|:--------------------------|:------------------|
+|  $FilePath$            |  $fPath$            |  入力ファイルパス         |  C:\rec\news.ts   |
+|  $FolderPath$          |  $fDir$             |  フォルダパス             |  C:\rec           |
+|  $FileName$            |  $fNameWithoutExt$  |  拡張子なしファイル名     |  news             |
+|  $FileNameWithExt$     |  $fName$            |  拡張子ありファイル名     |  news.ts          |
+|  $FilePathWithoutExt$  |  $fPathWithoutExt$  |  拡張子なしファイルパス   |  C:\rec\news      |
 
 
 
