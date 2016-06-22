@@ -47,8 +47,8 @@ namespace LGLauncher
                       (prcname) =>
                       {
                         prcname = prcname.Trim();
-                        bool haveExe = (Path.GetExtension(prcname).ToLower() == ".exe");
-                        prcname = (haveExe) ? Path.GetFileNameWithoutExtension(prcname) : prcname;
+                        bool hasExe = (Path.GetExtension(prcname).ToLower() == ".exe");
+                        prcname = (hasExe) ? Path.GetFileNameWithoutExtension(prcname) : prcname;
                         return prcname;
                       })
                      .ToList();
@@ -60,13 +60,13 @@ namespace LGLauncher
       var TargetHasExited = new Func<bool>(() =>
       {
         //プロセス数確認  ".exe"はつけない
+        int sum = 0;
         foreach (var target in targetNames)
         {
           var prclist = Process.GetProcessesByName(target);
-          if (multiRun <= prclist.Count())
-            return false;
+          sum += prclist.Count();
         }
-        return true;
+        return sum < multiRun;
       });
 
 
@@ -101,6 +101,8 @@ namespace LGLauncher
       var rand = new Random(DateTime.Now.Millisecond + Process.GetCurrentProcess().Id);
 
       ////Mutex取得        LGL
+      //  LGLauncher同士での衝突回避
+      //  Mutexが取得できないときは待機時間の追加
       //bool addtionalWait;
       //{
       //  const string MutexName = "LGL-A8245043-3476";      //LGL
@@ -115,7 +117,7 @@ namespace LGLauncher
         //const string MutexName = "LGL-A8245043-3476";  //LGL
         const string MutexName = "V2P-491E1B11-9DC0";    //V2P
         mutexControl = new SemaphoreControl();
-        mutexControl.Initlize(MutexName, multiRun);
+        mutexControl.Initilize(MutexName, multiRun);
         mutexControl.Get();
         addtionalWait = mutexControl.HasControl == false;
       }

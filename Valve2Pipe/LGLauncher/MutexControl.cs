@@ -13,7 +13,7 @@ namespace LGLauncher
   interface IMutexControl
   {
     bool HasControl { get; }
-    void Initlize(string name, int multiple = 1);
+    void Initilize(string name, int multiple = 1);
     bool Get();
     void Release();
   }
@@ -31,7 +31,7 @@ namespace LGLauncher
     /// <summary>
     /// 初期化
     /// </summary>
-    public void Initlize(string mutexName, int maxCount = 1)
+    public void Initilize(string mutexName, int maxCount = 1)
     {
       MutexName = mutexName;
       //ミューテックスのmaxCountは常に１
@@ -42,7 +42,7 @@ namespace LGLauncher
     /// </summary>
     public bool Get()
     {
-      if (HasControl) return HasControl;
+      if (HasControl) return true;
       if (string.IsNullOrEmpty(MutexName)) throw new Exception();
 
       hMutex = new System.Threading.Mutex(false, MutexName);
@@ -82,7 +82,7 @@ namespace LGLauncher
 
 
   /// <summary>
-  /// セマフォ 　 Name１つで複数（multiRun）取得可
+  /// セマフォ 　 複数取得可
   /// </summary>
   class SemaphoreControl : IMutexControl
   {
@@ -94,7 +94,7 @@ namespace LGLauncher
     /// <summary>
     /// 初期化
     /// </summary>
-    public void Initlize(string semaphoreName, int maxCount = 1)
+    public void Initilize(string semaphoreName, int maxCount = 1)
     {
       SemaphoreName = semaphoreName;
       MaxCount = maxCount;
@@ -105,7 +105,7 @@ namespace LGLauncher
     /// </summary>
     public bool Get()
     {
-      if (HasControl) return HasControl;
+      if (HasControl) return true;
       if (string.IsNullOrEmpty(SemaphoreName)) throw new Exception();
 
       const int timeout_min = 120;
