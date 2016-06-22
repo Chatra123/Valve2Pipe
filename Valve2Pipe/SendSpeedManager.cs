@@ -21,11 +21,11 @@ namespace Valve2Pipe
     ////  log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
 
-    //速度制限　最大
+    //制限速度　最大
     readonly double Max_SendLimit;
 
-    //現在の速度制限
-    double sendlimit = 1024 * 1024 * 2.0 * 0.4;           //地デジの等速　1.8 MB/sec
+    //現在の制限速度
+    double sendlimit = 1024 * 1024 * 2.0 * 0.4;           //参考：　地デジの等速　1.8 MB/sec
     double SendLimit
     {
       get { return sendlimit; }
@@ -54,7 +54,7 @@ namespace Valve2Pipe
     /// </summary>
     public SendSpeedManager(int target_pid,
                             int process_cpu_max, int system_cpu_max,
-                            double max_speed_MiBsec
+                            double limit_MiBsec
                            )
     {
       //BlackProcessChecker
@@ -68,10 +68,10 @@ namespace Valve2Pipe
         }
 
         //ブラックリスト読込み
-        var SIM_setting_file = new SystemIdleMonitor.Setting_File();
-        SIM_setting_file.Load(blacklistPath,
-                              Setting_BlackList_Default.Valve2Pipe);
-        blackChecker = new BlackProcessChecker(SIM_setting_file.ProcessList);
+        var SIM_setting = new SystemIdleMonitor.Setting_File();
+        SIM_setting.Load(blacklistPath,
+                         Setting_BlackList_Default.Valve2Pipe);
+        blackChecker = new BlackProcessChecker(SIM_setting.ProcessList);
       }
 
       //ProcessBusyChecker
@@ -82,8 +82,8 @@ namespace Valve2Pipe
 
       //Max_SendLimit  Byte/sec
       {
-        Max_SendLimit = (0 < max_speed_MiBsec)
-                        ? max_speed_MiBsec * 1024 * 1024
+        Max_SendLimit = (0 < limit_MiBsec)
+                        ? limit_MiBsec * 1024 * 1024
                         : 0;
       }
     }
@@ -100,7 +100,7 @@ namespace Valve2Pipe
       //ブラックプロセスが停止するまで待機
       while (true)
       {
-        if (10 * 1000 <(DateTime.Now - timeCheckBlack).TotalMilliseconds)
+        if (10 * 1000 < (DateTime.Now - timeCheckBlack).TotalMilliseconds)
           if (blackChecker.ExistBlack())
           {
             timeCheckBlack = DateTime.Now;
@@ -151,13 +151,14 @@ namespace Valve2Pipe
           }
         }
       }
-
+      
 
       //送信速度制限
+      if (0 < SendLimit)
       {
         //計測開始からの経過時間
-        double tickDuration = (DateTime.Now - tickBeginTime).TotalMilliseconds;
-        if (200 < tickDuration)      //Nmsごとにカウンタリセット
+        double elapse = (DateTime.Now - tickBeginTime).TotalMilliseconds;
+        if (200 < elapse)      //Nmsごとにカウンタリセット
         {
           tickBeginTime = DateTime.Now;
           tickSendSize = 0;
@@ -165,18 +166,16 @@ namespace Valve2Pipe
 
         //送信量が制限をこえていたらsleep()
         //  送信サイズに直して比較　　not 速度
-        if (0 < SendLimit)
-          if (SendLimit * (200.0 / 1000.0) < tickSendSize)
-          {
-            //////log4net
-            ////int sleep = (int)(200 - tickDuration);
-            ////log.Info("        sleep = " + sleep);
-            Thread.Sleep((int)(200 - tickDuration));
-          }
+        if (SendLimit * (200.0 / 1000.0) < tickSendSize)
+        {
+          //////log4net
+          ////int sleep = (int)(200 - tickDuration);
+          ////log.Info("        sleep = " + sleep);
+          Thread.Sleep((int)(200 - elapse));
+        }
       }
 
     }//func
-
 
   }//class
 

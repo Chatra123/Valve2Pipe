@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
 
 
@@ -50,23 +51,24 @@ namespace Valve2Pipe
     /// <summary>
     /// ライター登録、実行
     /// </summary>
-    /// <param name="newWriterList">実行するクライアント</param>
+    /// <param name="srcList">実行するクライアント</param>
     /// <returns>ライターが１つ以上起動したか</returns>
-    public bool RegisterWriter(List<Client_WriteStdin> newWriterList)
+    public bool RegisterWriter(List<Client_WriteStdin> srcList)
     {
-      if (newWriterList == null) return false;
+      if (srcList == null) return false;
 
-      WriterList = new List<Client_WriteStdin>(newWriterList);
-      WriterList.Reverse();
+      WriterList = new List<Client_WriteStdin>(srcList);
+      WriterList = WriterList.Where(client => client.IsEnable).ToList();
+      WriterList.Reverse();                                 //末尾から登録するので逆順に。
 
       //プロセス実行
       for (int i = WriterList.Count - 1; 0 <= i; i--)
       {
         var writer = WriterList[i];
-        //有効？
-        if (writer.IsEnable == false) { WriterList.Remove(writer); continue; }
+
         //実行
         writer.Start_WriteStdin();
+
         //実行失敗
         if (writer.StdinWriter == null) { WriterList.Remove(writer); continue; }
       }
@@ -124,7 +126,7 @@ namespace Valve2Pipe
       }
 
 
-      //全タスクが完了するまで待機。Timeout = -1にはしないこと
+      //全タスクが完了するまで待機
       Task.WaitAll(tasklist.ToArray(), Timeout);
 
 

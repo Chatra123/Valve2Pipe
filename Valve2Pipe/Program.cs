@@ -7,6 +7,7 @@ using System.Threading;
 using System.IO;
 using System.Xml.Serialization;
 
+
 namespace Valve2Pipe
 {
   class Program
@@ -56,14 +57,10 @@ namespace Valve2Pipe
 
 
       //  Setting_File
-      Setting_File setting_file = null;
-      {
-        setting_file = Setting_File.LoadFile();
-      }
-      //　Clientのマクロを設定
-      {
-        Client.Macro_SrcPath = cmdline.SrcPath;
-      }
+      Setting_File setting_file = Setting_File.LoadFile();
+
+      //Clientのマクロを設定
+      Client.Macro_SrcPath = cmdline.SrcPath;
 
 
       //Reader
@@ -93,28 +90,28 @@ namespace Valve2Pipe
         //エンコーダープロセス数のチェック
         //  ffmpeg、x264が動作していたら終了するまで待機
         {
-          int multiRun = setting_file.Encoder_MultipleRun;
+          int multi = setting_file.Encoder_MultipleRun;
           var encorderNames = setting_file.EncoderNames
-                                          .Split()                        //スペース分割
+                                          .Split()                        //スペースで分割
                                           .Where(ext => string.IsNullOrWhiteSpace(ext) == false)
                                           .Distinct()
                                           .ToList();
-          //セマフォ取得
+          //Semaphore取得
           waitForReady = new LGLauncher.WaitForSystemReady();
           waitForReady.GetReady(encorderNames,
-                                multiRun,
+                                multi,
                                 false);
         }
 
 
-        //Encoder 起動
+        //Encoder起動
         var writer = new OutputWriter();
         int writer_pid = -1;
         {
           var client = SelectReaderWriter.GetEncorderClinet(
-                                                cmdline.Mode_Stdout,          //自身の標準出力から送信するモードか
-                                                cmdline.Profile,              //コマンドライン指定のエンコーダー
-                                                setting_file.PresetEncoder);  //設定ファイルのエンコーダーの設定一覧
+                                                cmdline.Mode_Stdout,          //標準出力から送信するモードか
+                                                cmdline.Profile,              //指定のプロフィール名
+                                                setting_file.PresetEncoder);  //設定ファイルのプロフィール一覧
           writer.RegisterWriter(client);
           writer.Timeout = TimeSpan.FromMilliseconds(-1);
           writer_pid = (cmdline.Mode_Stdout) ? -1 : writer.GetPID_FirstWriter();
@@ -134,8 +131,8 @@ namespace Valve2Pipe
           int pid = writer_pid;
           int prc_CPU = setting_file.Encoder_CPU_Max;
           int sys_CPU = setting_file.System__CPU_Max;
-          double max_speed = setting_file.ReadLimit_MiBsec;
-          sendSpeed = new SendSpeedManager(pid, prc_CPU, sys_CPU, max_speed);
+          double limit = setting_file.ReadLimit_MiBsec;
+          sendSpeed = new SendSpeedManager(pid, prc_CPU, sys_CPU, limit);
         }
 
         //
@@ -147,8 +144,10 @@ namespace Valve2Pipe
           //read
           var readData = reader.ReadBytes(requestSize);
           if (readData.Length == 0) break;                   //ファイル終端
+
           //送信速度　調整
           sendSpeed.Update_and_Sleep(readData.Length);
+
           //write
           writer.WriteData(readData);
           if (writer.HasWriter == false) break;
@@ -159,7 +158,7 @@ namespace Valve2Pipe
       }
       finally
       {
-        //セマフォ解放
+        //Semaphore解放
         if (waitForReady != null)
           waitForReady.Release();
       }

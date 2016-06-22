@@ -8,7 +8,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-
 namespace Valve2Pipe
 {
   /// <summary>
@@ -48,7 +47,7 @@ namespace Valve2Pipe
     /// </summary>
     protected Process CreateProcess()
     {
-      if (Enable <= 0) return null;
+      if (IsEnable == false) return null;
       if (BasePath == null) return null;
 
       var prc = new Process();
@@ -209,7 +208,7 @@ namespace Valve2Pipe
     public Client_OutStdout()
     {
       Enable = 1;
-      Name = "stdout";
+      Name = "OutStdout";
       //ダミーのProcessを割り当てる。プロセスの生存チェック回避
       Process = Process.GetCurrentProcess();
 
