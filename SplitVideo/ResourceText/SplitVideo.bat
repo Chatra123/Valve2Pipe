@@ -92,8 +92,8 @@ del /q "%ListPath%"
 ::    ogm chapterを mp4に結合
 ::  
 set remuxer="$remuxer$"
-set ChapterVideo="$AviWithoutExt$.chap%ext%"
-set nero="$AviWithoutExt$.ogm.chapter"
+set ChapterVideo="$AviName$.chap%ext%"
+set nero="$AviName$.ogm.chapter"
 
 if exist %remuxer% (
   if exist %nero% (

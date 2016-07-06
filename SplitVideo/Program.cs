@@ -23,8 +23,8 @@ namespace SplitVideo
     //ファイルパス
     static string FFmpegPath, LSM_remuxerPath;
 
-    static string TsPath, TsDir, TsNameWithoutExt;
-    static string AviPath, AviShortName, AviWithoutExt, AviExt;
+    static string TsPath, TsDir, TsName;
+    static string AviPath, AviShortName, AviName, AviExt;
     static string CutAvi_ShortPath, CutAvi_Name;
 
     static string[] ExtList = { ".avi", ".mp4" };
@@ -50,7 +50,7 @@ namespace SplitVideo
 
 
       //フレームファイル読込み
-      var framePath = Path.Combine(TsDir, TsNameWithoutExt + ".frame.txt");
+      var framePath = Path.Combine(TsDir, TsName + ".frame.txt");
       var frameList = FrameFile_to_List(framePath);
 
       if (frameList == null)
@@ -140,12 +140,12 @@ namespace SplitVideo
       //Ts
       TsPath = args[0];
       TsDir = Path.GetDirectoryName(TsPath);
-      TsNameWithoutExt = Path.GetFileNameWithoutExtension(TsPath);
+      TsName = Path.GetFileNameWithoutExtension(TsPath);
 
       //Avi
       foreach (var ext in ExtList)
       {
-        string path = Path.Combine(TsDir, TsNameWithoutExt + ext);
+        string path = Path.Combine(TsDir, TsName + ext);
         if (File.Exists(path))
         {
           AviPath = path;
@@ -156,20 +156,20 @@ namespace SplitVideo
           AviPath = "not found";
       }
 
-      AviWithoutExt = TsNameWithoutExt;
+      AviName = TsName;
 
       //ShortName  作業用のファイル名
       string timecode = DateTime.Now.ToString("mmssff");
       string pid = Process.GetCurrentProcess().Id.ToString();
 
-      AviShortName = new Regex("[ $|()^　]").Replace(TsNameWithoutExt, "_");      //batの特殊文字　置換
+      AviShortName = new Regex("[ $|()^　]").Replace(TsName, "_");      //batの特殊文字　置換
       AviShortName = (5 < AviShortName.Length) ? AviShortName.Substring(0, 5) : AviShortName;
       AviShortName = AviShortName + "_" + timecode + "_" + pid;
 
 
       //cat video
       CutAvi_ShortPath = Path.Combine(TsDir, AviShortName + ".cut" + AviExt);
-      CutAvi_Name = TsNameWithoutExt + ".cut" + AviExt;
+      CutAvi_Name = TsName + ".cut" + AviExt;
 
       //show path
       Console.Error.WriteLine("TsPath    =" + TsPath);
@@ -242,7 +242,7 @@ namespace SplitVideo
             line = Regex.Replace(line, @"\$ext\$", AviExt, RegexOptions.IgnoreCase);
             line = Regex.Replace(line, @"\$AviPath\$", AviPath, RegexOptions.IgnoreCase);
             line = Regex.Replace(line, @"\$AviShort\$", AviShortName, RegexOptions.IgnoreCase);
-            line = Regex.Replace(line, @"\$AviWithoutExt\$", AviWithoutExt, RegexOptions.IgnoreCase);
+            line = Regex.Replace(line, @"\$AviName\$", AviName, RegexOptions.IgnoreCase);
             //Rename CutAvi
             line = Regex.Replace(line, @"\$CutAvi_ShortPath\$", CutAvi_ShortPath, RegexOptions.IgnoreCase);
             line = Regex.Replace(line, @"\$CutAvi_Name\$", CutAvi_Name, RegexOptions.IgnoreCase);
