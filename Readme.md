@@ -17,32 +17,32 @@
 ### 使い方　　コマンドライン
 
 ファイル  
-Valve2Pipe.exe  "C:\video.ts"        -profile RunTest_mp4
+Valve2Pipe.exe  "C:\video.ts"        -profile RunTest_mp4  
 
-標準入力  
-Valve2Pipe.exe  -pipe "C:\video.ts"  -profile RunTest_mp4
+パイプ  
+Valve2Pipe.exe  -pipe "C:\video.ts"  -profile RunTest_mp4  
 
 
 
 ------------------------------------------------------------------
 ### 引数
 
-    -file  "C:\video.ts"
-入力ファイルパス
-マクロ$FilePath$はC:\video.tsに置換されます。
+    -file  "C:\video.ts"  
+入力ファイルパス  
+マクロ$FilePath$はC:\video.tsに置換されます。  
 
 
-    -pipe  "C:\video.ts"
-標準入力
-マクロ$FilePath$はC:\video.tsに置換されます。
+    -pipe  "C:\video.ts"  
+パイプ  
+マクロ$FilePath$はC:\video.tsに置換されます。  
 
 
     -profile RunTest_mp4
-エンコーダー名を指定する。設定ファイル PresetEncoderの Nameから RunTest_mp4を探します。
+エンコーダー名を指定する。設定ファイル PresetEncoderの Nameから RunTest_mp4を探します。  
 
 
     -stdout
-エンコーダーへリダイレクトしないで、標準出力へ出力します。
+エンコーダーへリダイレクトしないで、標準出力へ出力します。  
 
 
 
@@ -85,9 +85,10 @@ BasePath、BaseArgsで使えるマクロ
 |:-----------------------|:--------------------|:--------------------------|:------------------|
 |  $FilePath$            |  $fPath$            |  入力ファイルパス         |  C:\rec\news.ts   |
 |  $FolderPath$          |  $fDir$             |  フォルダパス             |  C:\rec           |
-|  $FileName$            |  $fNameWithoutExt$  |  拡張子なしファイル名     |  news             |
-|  $FileNameWithExt$     |  $fName$            |  拡張子ありファイル名     |  news.ts          |
-|  $FilePathWithoutExt$  |  $fPathWithoutExt$  |  拡張子なしファイルパス   |  C:\rec\news      |
+|  $FileName$            |  $fNameWithoutExt$  |  拡張子無しファイル名     |  news             |
+|  $Ext$                 |                     |  拡張子                   |  .ts              |
+|  $FileNameExt$         |  $fName$            |  拡張子付きファイル名     |  news.ts          |
+|  $FilePathWithoutExt$  |  $fPathWithoutExt$  |  拡張子無しファイルパス   |  C:\rec\news      |
 
 
 
