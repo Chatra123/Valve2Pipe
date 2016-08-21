@@ -15,7 +15,7 @@ namespace Valve2Pipe
   [Serializable]
   public class Setting_File
   {
-    const double CurrentRev = 12.0;
+    const double CurrentRev = 13.0;
 
     public double Rev = 0.0;
     public int Encoder_CPU_Max;
@@ -42,14 +42,14 @@ namespace Valve2Pipe
       Encoder_CPU_Max = 20;
       System__CPU_Max = 80;
       Encoder_MultipleRun = 1;
-      EncoderNames = "  ffmeg   x264   x265  ";
+      EncoderNames = "  ffmpeg   x264   x265  ";
       ReadLimit_MiBsec = 10.0;
       PresetEncoder = new List<Client_WriteStdin>();
     }
 
 
     /// <summary>
-    /// 設定ファイルを読み込む
+    /// 設定ファイルを読込
     /// </summary>
     /// <param name="xmlpath">読込むファイルを指定</param>
     public static Setting_File LoadFile(string xmlpath = null)
@@ -60,7 +60,6 @@ namespace Valve2Pipe
         xmlpath = Default_XmlPath;
         if (File.Exists(xmlpath) == false)
         {
-          //設定ファイル作成
           var def_Setting = Sample_RunTest();
           XmlRW.Save(xmlpath, def_Setting);
         }
@@ -117,5 +116,5 @@ namespace Valve2Pipe
 
 
 
-  }//class
+  }
 }
