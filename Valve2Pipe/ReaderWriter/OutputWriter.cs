@@ -30,8 +30,12 @@ namespace Valve2Pipe
       if (HasWriter)
         foreach (var one in WriterList)
         {
+          System.Threading.Thread.Sleep(500);
           if (one != null && one.StdinWriter != null)
+          {
             one.StdinWriter.Close();
+            one.Process.WaitForExit(3 * 1000);
+          }
         }
     }
 

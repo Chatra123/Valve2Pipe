@@ -27,15 +27,13 @@ namespace Valve2Pipe
       }
 
       //log
-      {
-        //ファイルが無い
-        if (pipeMode || fileMode)
-          if (File.Exists(srcPath) == false)
-          {
-            Console.Error.WriteLine("not exist input file");
-            Console.Error.WriteLine("  " + srcPath);
-          }
-      }
+      //ファイルが無い
+      if (pipeMode || fileMode)
+        if (File.Exists(srcPath) == false)
+        {
+          Console.Error.WriteLine("not exist input file");
+          Console.Error.WriteLine("  " + srcPath);
+        }
 
       return null;
     }
@@ -65,7 +63,7 @@ namespace Valve2Pipe
 
         //sel_profileとNameが完全一致　　（前後の空白を除いた後、文字列と長さが一致）
         var encorder = presetEncorder
-                        .Where((client) => 0 <= client.Name.ToLower().Trim().IndexOf(sel_profile))
+                        .Where((client) => 0 == client.Name.ToLower().Trim().IndexOf(sel_profile))
                         .Where((client) => sel_profile.Length == client.Name.ToLower().Trim().Length)
                         .ToList();
         encorder = encorder.Take(1).ToList();

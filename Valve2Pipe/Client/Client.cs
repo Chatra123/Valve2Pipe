@@ -151,10 +151,8 @@ namespace Valve2Pipe
     /// <returns>プロセスが実行できたか</returns>
     public bool Start_WriteStdin()
     {
-      //Client_OutStdoutは既にダミープロセスを割り当て済み。
-      //this.Processに直接いれず、prcを経由する。
       var prc = CreateProcess();
-      if (prc == null) return false;               //Process起動失敗
+      if (prc == null) return false;
 
       Process = prc;
 
@@ -169,8 +167,8 @@ namespace Valve2Pipe
       Process.StartInfo.RedirectStandardOutput = false;
 
       //標準エラー
-      //  バッファが詰まるのでfalse or 非同期で取り出す
-      //　falseだとコンソールに表示される
+      //  CreateLwiのバッファが詰まるのでfalse or 非同期で取り出す。
+      //　falseだとコンソールに表示されるので非同期で取り出して捨てる。
       Process.StartInfo.RedirectStandardError = true;
       //標準エラーを取り出す。
       Process.ErrorDataReceived += (o, e) =>
