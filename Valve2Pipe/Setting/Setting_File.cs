@@ -54,18 +54,16 @@ namespace Valve2Pipe
     /// <param name="xmlpath">読込むファイルを指定</param>
     public static Setting_File LoadFile(string xmlpath = null)
     {
-      //デフォルト名を使用
+      //デフォルト名を使用、新規作成
       if (string.IsNullOrEmpty(xmlpath))
       {
         xmlpath = Default_XmlPath;
         if (File.Exists(xmlpath) == false)
-        {
-          var def_Setting = Sample_RunTest();
-          XmlRW.Save(xmlpath, def_Setting);
-        }
+          XmlRW.Save(xmlpath, Sample_RunTest());
       }
 
       var file = XmlRW.Load<Setting_File>(xmlpath);
+      file = file ?? Sample_RunTest();
 
       //追加された項目、削除された項目を書き換え。
       //ユーザーが消したタグなども復元される。
