@@ -5,11 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 using System.IO;
-
+using SIM = SystemIdleMonitor;
 
 namespace Valve2Pipe
 {
-  using SystemIdleMonitor;
+
 
   /// <summary>
   /// 送信速度の制御  プロセスのＣＰＵ使用率を調整するため
@@ -42,11 +42,8 @@ namespace Valve2Pipe
     double tickSendSize = 0;                     //単位時間の送信量
     DateTime tickBeginTime;                      //計測開始時間
 
-    //System Checker
-    BlackProcessChecker blackChecker = null;
-    ProcessBusyChecker busyChecker = null;
-
-    //  last system check time
+    SIM.BlackProcessChecker blackChecker = null;
+    SIM.ProcessBusyChecker busyChecker = null;
     DateTime timeCheckBlack, timeCheckBusy;
 
     /// <summary>
@@ -68,24 +65,21 @@ namespace Valve2Pipe
         }
 
         //ブラックリスト読込み
-        var SIM_setting = new SystemIdleMonitor.Setting_File();
+        var SIM_setting = new SIM.Setting_File();
+
         SIM_setting.Load(blacklistPath,
                          Setting_BlackList_Default.Valve2Pipe);
-        blackChecker = new BlackProcessChecker(SIM_setting.ProcessList);
+        blackChecker = new SIM.BlackProcessChecker(SIM_setting.ProcessList);
       }
 
       //ProcessBusyChecker
-      {
-        //target_pid = -1 なら process_CPUに関しては評価されない。
-        busyChecker = new ProcessBusyChecker(target_pid, process_cpu_max, system_cpu_max);
-      }
+      //target_pid = -1 なら process_CPUに関しては評価されない。
+      busyChecker = new SIM.ProcessBusyChecker(target_pid, process_cpu_max, system_cpu_max);
 
       //Max_SendLimit  Byte/sec
-      {
-        Max_SendLimit = (0 < limit_MiBsec)
-                        ? limit_MiBsec * 1024 * 1024
-                        : 0;
-      }
+      Max_SendLimit = (0 < limit_MiBsec)
+                      ? limit_MiBsec * 1024 * 1024
+                      : 0;
     }
 
 
@@ -95,7 +89,7 @@ namespace Valve2Pipe
     public void Update_and_Sleep(int sendsize)
     {
       //送信量　更新
-      tickSendSize += sendsize;    //記録  送信速度制限用
+      tickSendSize += sendsize;
 
       //ブラックプロセスが停止するまで待機
       while (true)
@@ -151,12 +145,11 @@ namespace Valve2Pipe
           }
         }
       }
-      
+
 
       //送信速度制限
       if (0 < SendLimit)
       {
-        //計測開始からの経過時間
         double elapse = (DateTime.Now - tickBeginTime).TotalMilliseconds;
         if (200 < elapse)      //Nmsごとにカウンタリセット
         {
@@ -176,7 +169,6 @@ namespace Valve2Pipe
       }
 
     }//func
-
   }//class
 
 

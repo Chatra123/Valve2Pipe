@@ -8,7 +8,7 @@ using System.Threading;
 namespace LGLauncher
 {
   /// <summary>
-  /// ミューテックスの制御
+  /// ミューテックスの取得
   /// </summary>
   interface IMutexControl
   {
@@ -31,9 +31,9 @@ namespace LGLauncher
     /// <summary>
     /// 初期化
     /// </summary>
-    public void Initilize(string mutexName, int maxCount = 1)
+    public void Initilize(string name, int count = 1)
     {
-      MutexName = mutexName;
+      MutexName = name;
       //ミューテックスのmaxCountは常に１
     }
 
@@ -50,10 +50,17 @@ namespace LGLauncher
 
       // Mutex のシグナルを受信できるまで待機
       //　プロセスが強制終了されても基本的には自動で解放される。
-      if (hMutex.WaitOne())
+      try
       {
-        HasControl = true;
+        if (hMutex.WaitOne())
+          HasControl = true;
       }
+      catch (AbandonedMutexException)
+      {
+        //別のスレッドが解放せずに放棄した Mutexを取得した
+        HasControl = false;
+      }
+
       return HasControl;
     }
 
@@ -62,10 +69,13 @@ namespace LGLauncher
     /// </summary>
     public void Release()
     {
+      if (hMutex != null && HasControl)
+      {
+        hMutex.ReleaseMutex();
+        HasControl = false;
+      }
       if (hMutex != null)
       {
-        HasControl = false;
-        hMutex.ReleaseMutex();
         hMutex.Close();
         hMutex = null;
       }
@@ -94,10 +104,10 @@ namespace LGLauncher
     /// <summary>
     /// 初期化
     /// </summary>
-    public void Initilize(string semaphoreName, int maxCount = 1)
+    public void Initilize(string name, int count = 1)
     {
-      SemaphoreName = semaphoreName;
-      MaxCount = maxCount;
+      SemaphoreName = name;
+      MaxCount = count;
     }
 
     /// <summary>
@@ -119,25 +129,29 @@ namespace LGLauncher
         //プロセスが強制終了されているとセマフォが解放されず取得できない。
         //一定時間でタイムアウトさせる。
         //全ての待機プロセスが終了するとセマフォがリセットされ再取得できるようになる。
-        //Log.WriteLine("  timeout of waiting for semaphore");  //LGL
         HasControl = false;
       }
       return HasControl;
     }
+
 
     /// <summary>
     /// Release
     /// </summary>
     public void Release()
     {
+      if (hSemaphore != null && HasControl)
+      {
+        hSemaphore.Release();
+        HasControl = false;
+      }
       if (hSemaphore != null)
       {
-        HasControl = false;
-        hSemaphore.Release();
         hSemaphore.Close();
         hSemaphore = null;
       }
     }
+
 
     /// <summary>
     /// destructor

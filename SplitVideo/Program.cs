@@ -49,9 +49,9 @@ namespace SplitVideo
       }
 
 
-      //フレームファイル読込み
+      //frame読
       var framePath = Path.Combine(TsDir, TsName + ".frame.txt");
-      var frameList = FrameFile_to_List(framePath);
+      var frameList = Read_FrameFile(framePath);
 
       if (frameList == null)
       {
@@ -61,21 +61,20 @@ namespace SplitVideo
       }
 
 
-      //batファイル作成
+      //bat作成
       string batPath;
       {
         batPath = Path.Combine(TsDir, AviShortName + ".split_cat.bat");
 
-        var batText = CreateBatText(frameList);
+        var textList = CreateBatText(frameList);
 
-        //１行に変換
-        //  List<string>  →  string
-        string batString = "";
-        batText.ForEach((line) => { batString += line + Environment.NewLine; });
+        //List<string>  →  string
+        string batText = "";
+        textList.ForEach((line) => { batText += line + Environment.NewLine; });
 
-        //bat はshift-jisで保存
+        //batはshift-jisで保存
         //UTF-8で保存すると実行時に日本語ファイルが取り扱えない。
-        File.WriteAllText(batPath, batString, Encoding.GetEncoding("Shift_JIS"));
+        File.WriteAllText(batPath, batText, Encoding.GetEncoding("Shift_JIS"));
       }
 
       //Run bat
@@ -267,7 +266,6 @@ namespace SplitVideo
             line = Regex.Replace(line, duration_sec, "" + DurationSec[idx], RegexOptions.IgnoreCase);
           }
 
-          //set replaced line
           batText[i] = line;
         }
       }
@@ -275,60 +273,51 @@ namespace SplitVideo
     }
 
 
+
     /// <summary>
-    /// File  →  List<int>
+    /// read *.frame.txt  -->  List<int>
     /// </summary>
-    /// <param name="framePath">フレームファイルパス</param>
     /// <returns>
-    /// 取得成功　→　List<int>
-    /// 　　失敗　→　null
+    /// 取得成功  -->  List<int>
+    /// 　　失敗  -->  null
     /// </returns>
-    private static List<int> FrameFile_to_List(string framePath)
+    public static List<int> Read_FrameFile(string framePath)
     {
-      //List<string>  -->  List<int>
-      var ConvertToIntList = new Func<List<string>, List<int>>(
-        (stringList) =>
+      //check
+      if (File.Exists(framePath) == false) return null;
+
+      //読
+      var text = FileR.ReadAllLines(framePath);
+      if (text == null) return null;
+
+      //コメント削除、トリム
+      text = text.Select(
+        (line) =>
         {
-          var intList = new List<int>();
-          int result;
+          int found = line.IndexOf("//");
+          line = (0 <= found) ? line.Substring(0, found) : line;
+          return line.Trim();
+        })
+        .Where((line) => string.IsNullOrWhiteSpace(line) == false)    //空白行削除
+        .ToList();
 
-          stringList = stringList.Select(
-                                  (line) =>
-                                  {
-                                    //コメント削除、トリム
-                                    int found = line.IndexOf("//");
-                                    line = (0 <= found) ? line.Substring(0, found) : line;
-                                    line = line.Trim();
-                                    return line;
-                                  })
-                                  .Where((line) => string.IsNullOrWhiteSpace(line) == false)    //空白行削除
-                                  .Distinct()                                                   //重複削除
-                                  .ToList();
 
-          foreach (var line in stringList)
-          {
-            if (int.TryParse(line, out result) == false) return null;          //変換失敗
-            intList.Add(result);
-          }
+      //List<string>  -->  List<int>
+      List<int> frameList;
+      try
+      {
+        frameList = text.Select(line => int.Parse(line)).ToList();
+      }
+      catch
+      {
+        frameList = null;  //変換失敗
+      }
 
-          return intList;
-        });
-
-      //読込み
-      if (File.Exists(framePath) == false) return null;    //ファイルチェック
-      var frameText = FileR.ReadAllLines(framePath);       //List<string>でファイル取得
-      if (frameText == null) return null;
-
-      //List<int>に変換
-      var frameList = ConvertToIntList(frameText);
-
-      //エラーチェック
+      //check
       if (frameList == null) return null;
-      if (frameList.Count % 2 == 1) return null;           //奇数個ならエラー
+      if (frameList.Count % 2 == 1) return null;
       return frameList;
     }
-
-
 
 
 
