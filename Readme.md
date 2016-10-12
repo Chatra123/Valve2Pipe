@@ -81,14 +81,14 @@ Valve2Pipe.exe  -pipe "C:\video.ts"  -profile RunTest_mp4
 
 BasePath、BaseArgsで使えるマクロ  
 
-|  マクロ                |  マクロ  r11まで    |  説明                     |  例               |
-|:-----------------------|:--------------------|:--------------------------|:------------------|
-|  $FilePath$            |  $fPath$            |  入力ファイルパス         |  C:\rec\news.ts   |
-|  $FolderPath$          |  $fDir$             |  フォルダパス             |  C:\rec           |
-|  $FileName$            |  $fNameWithoutExt$  |  拡張子無しファイル名     |  news             |
-|  $Ext$                 |                     |  拡張子                   |  .ts              |
-|  $FileNameExt$         |  $fName$            |  拡張子付きファイル名     |  news.ts          |
-|  $FilePathWithoutExt$  |  $fPathWithoutExt$  |  拡張子無しファイルパス   |  C:\rec\news      |
+|  マクロ                |  説明                     |  例               |
+|:-----------------------|:--------------------------|:------------------|
+|  $FilePath$            |  入力ファイルパス         |  C:\rec\news.ts   |
+|  $FolderPath$          |  フォルダパス             |  C:\rec           |
+|  $FileName$            |  拡張子無しファイル名     |  news             |
+|  $Ext$                 |  拡張子                   |  .ts              |
+|  $FileNameExt$         |  拡張子付きファイル名     |  news.ts          |
+|  $FilePathWithoutExt$  |  拡張子無しファイルパス   |  C:\rec\news      |
 
 
 
