@@ -44,7 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Text\FileRW.cs" />
-    <EmbeddedResource Include="ResourceText\SplitVideo.bat" />
+    <EmbeddedResource Include="Resource\SplitVideo.bat" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

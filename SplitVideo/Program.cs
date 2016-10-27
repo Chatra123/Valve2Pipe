@@ -222,7 +222,7 @@ namespace SplitVideo
       var batText = new List<string>();
       {
         //Resource読込み
-        batText = FileR.ReadFromResource("SplitVideo.ResourceText.SplitVideo.bat");
+        batText = FileR.ReadFromResource("SplitVideo.Resource.SplitVideo.bat");
 
         //置換
         for (int i = 0; i < batText.Count; i++)

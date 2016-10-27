@@ -3,7 +3,7 @@ setlocal
 
 
 ::WorkDir
-pushd %0\..
+pushd "%~dp0"
 
 
 ::
