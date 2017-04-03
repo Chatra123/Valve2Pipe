@@ -60,7 +60,6 @@ namespace Valve2Pipe
         sel_profile = sel_profile ?? "";
         sel_profile = sel_profile.ToLower().Trim();
         presetEncorder = presetEncorder ?? new List<Client_WriteStdin>();
-
         //sel_profileとNameが完全一致　　（前後の空白を除いた後、文字列と長さが一致）
         var encorder = presetEncorder
                         .Where((client) => 0 == client.Name.ToLower().Trim().IndexOf(sel_profile))

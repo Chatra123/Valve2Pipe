@@ -18,8 +18,8 @@ namespace Valve2Pipe
     public bool Mode_Stdout { get; private set; }      //自身の標準出力へ出力する
     public bool IsPipeMode { get; private set; }
     public bool IsFileMode { get; private set; }
-    public String SrcPath { get; private set; }
-    public String Profile { get; private set; }
+    public string SrcPath { get; private set; }
+    public string Profile { get; private set; }
 
     /// <summary>
     /// コマンドライン解析

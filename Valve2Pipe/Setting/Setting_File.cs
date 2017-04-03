@@ -25,7 +25,6 @@ namespace Valve2Pipe
     public string EncoderNames;
     public List<Client_WriteStdin> PresetEncoder;
 
-    //設定ファイル名
     private static readonly string
             AppPath = System.Reflection.Assembly.GetExecutingAssembly().Location,
             AppDir = Path.GetDirectoryName(AppPath),
@@ -38,7 +37,6 @@ namespace Valve2Pipe
     /// </summary>
     public Setting_File()
     {
-      //初期設定
       Encoder_CPU_Max = 20;
       System__CPU_Max = 80;
       Encoder_MultipleRun = 1;
@@ -51,7 +49,6 @@ namespace Valve2Pipe
     /// <summary>
     /// 設定ファイルを読込
     /// </summary>
-    /// <param name="xmlpath">読込むファイルを指定</param>
     public static Setting_File LoadFile(string xmlpath = null)
     {
       //デフォルト名を使用、新規作成
@@ -63,7 +60,6 @@ namespace Valve2Pipe
       }
 
       var file = XmlRW.Load<Setting_File>(xmlpath);
-      file = file ?? Sample_RunTest();
 
       //追加された項目、削除された項目を書き換え。
       //ユーザーが消したタグなども復元される。
@@ -72,7 +68,6 @@ namespace Valve2Pipe
         file.Rev = CurrentRev;
         XmlRW.Save(xmlpath, file);
       }
-
       return file;
     }
 

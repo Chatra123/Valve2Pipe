@@ -9,8 +9,6 @@ using SIM = SystemIdleMonitor;
 
 namespace Valve2Pipe
 {
-
-
   /// <summary>
   /// 送信速度の制御  プロセスのＣＰＵ使用率を調整するため
   /// </summary>
@@ -20,10 +18,8 @@ namespace Valve2Pipe
     ////private static readonly log4net.ILog log =
     ////  log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-
     //制限速度　最大
     readonly double Max_SendLimit;
-
     //現在の制限速度
     double sendlimit = 1024 * 1024 * 2.0 * 0.4;           //参考：　地デジの等速　1.8 MB/sec
     double SendLimit
@@ -37,7 +33,6 @@ namespace Valve2Pipe
         sendlimit = (sendlimit <= 0) ? 1 : sendlimit;
       }
     }
-
     //速度計算用
     double tickSendSize = 0;                     //単位時間の送信量
     DateTime tickBeginTime;                      //計測開始時間
@@ -51,8 +46,7 @@ namespace Valve2Pipe
     /// </summary>
     public SendSpeedManager(int target_pid,
                             int process_cpu_max, int system_cpu_max,
-                            double limit_MiBsec
-                           )
+                            double limit_MiBsec)
     {
       //BlackProcessChecker
       {
@@ -63,21 +57,18 @@ namespace Valve2Pipe
           string AppName = Path.GetFileNameWithoutExtension(AppPath);
           blacklistPath = Path.Combine(AppDir, AppName + ".txt");
         }
-
         //ブラックリスト読込み
         var SIM_setting = new SIM.Setting_File();
-
         SIM_setting.Load(blacklistPath,
-                         Setting_BlackList_Default.Valve2Pipe);
+                         V2P_Text.Default);
         blackChecker = new SIM.BlackProcessChecker(SIM_setting.ProcessList);
       }
 
       //ProcessBusyChecker
       //target_pid = -1 なら process_CPUに関しては評価されない。
       busyChecker = new SIM.ProcessBusyChecker(target_pid, process_cpu_max, system_cpu_max);
-
       //Max_SendLimit  Byte/sec
-      Max_SendLimit = (0 < limit_MiBsec)
+      Max_SendLimit = 0 < limit_MiBsec
                       ? limit_MiBsec * 1024 * 1024
                       : 0;
     }
@@ -88,7 +79,6 @@ namespace Valve2Pipe
     /// </summary>
     public void Update_and_Sleep(int sendsize)
     {
-      //送信量　更新
       tickSendSize += sendsize;
 
       //ブラックプロセスが停止するまで待機
@@ -128,7 +118,6 @@ namespace Valve2Pipe
           //－－
           //　送信量と比べて SendLimitがかなり大きいなら減らす。
           double ticklimit = SendLimit * (200.0 / 1000.0);  // 200ms間の送信上限サイズ
-
           if (ticklimit * 0.95 < tickSendSize)
           {
             SendLimit += SendLimit * Delta;
@@ -146,8 +135,7 @@ namespace Valve2Pipe
         }
       }
 
-
-      //送信速度制限
+      //速度制限
       if (0 < SendLimit)
       {
         double elapse = (DateTime.Now - tickBeginTime).TotalMilliseconds;
@@ -156,7 +144,6 @@ namespace Valve2Pipe
           tickBeginTime = DateTime.Now;
           tickSendSize = 0;
         }
-
         //送信量が制限をこえていたらsleep()
         //  送信サイズに直して比較　　not 速度
         if (SendLimit * (200.0 / 1000.0) < tickSendSize)
@@ -176,9 +163,9 @@ namespace Valve2Pipe
 
 
   //ブラックリスト　設定テキスト
-  public static class Setting_BlackList_Default
+  public static class V2P_Text
   {
-    public const string Valve2Pipe =
+    public const string Default =
    @"
 //
 //### Valve2Pipeについて

@@ -10,24 +10,72 @@ using System.Xml.Serialization;
 
 namespace Valve2Pipe
 {
+  static class Log
+  {
+    static private bool Enable = true;
+    static StreamWriter writer;
+
+    public static void Close()
+    {
+      if (writer != null)
+        writer.Close();
+    }
+
+    private static StreamWriter CreateWriter(string filename)
+    {
+      try
+      {
+        var logfile = new FileInfo(filename);
+        bool append = logfile.Exists && logfile.Length <= 64 * 1024;  //64 KB 以下なら追記
+        var writer = new StreamWriter(filename, append, Encoding.UTF8);   //UTF-8 bom
+        return writer;
+      }
+      catch
+      {
+        Enable = false;
+        return null;
+      }
+    }
+
+    public static void WriteLine(string line = "")
+    {
+      if (Enable == false) return;
+      Console.Error.WriteLine(line);
+      if (writer != null)
+        writer = CreateWriter("log.txt");
+      if (writer != null)
+        writer.WriteLine(line);
+    }
+  }
+
+
+
   class Program
   {
-
     static void Main(string[] args)
     {
       ////テスト引数
       //var testArgs = new List<string>();
-      //testArgs.Add(@"-File");
-      //testArgs.Add(@"ac2s.ts");
-      //testArgs.Add(@"-stdout");
-      ////testArgs.Add(@"-profile");
-      ////testArgs.Add(@"  through  ");
+      //testArgs.Add(@"-file");
+      //testArgs.Add(@"E:\TS_Samp\t30s.ts");
+      ////testArgs.Add(@"-stdout");
+      //testArgs.Add(@"-profile");
+      //testArgs.Add(@"  RunTest_mp4  ");
       //args = testArgs.ToArray();
-
-
 
       //例外を捕捉する
       AppDomain.CurrentDomain.UnhandledException += OctNov.Excp.ExceptionInfo.OnUnhandledException;
+
+      string AppPath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+      string AppDir = System.IO.Path.GetDirectoryName(AppPath);
+      Directory.SetCurrentDirectory(AppDir);
+
+      Log.WriteLine();
+      Log.WriteLine("----------------------");
+      Log.WriteLine("[ Args ]");
+      foreach (var arg in args)
+        Log.WriteLine(arg);
+      Log.WriteLine();
 
 
       //設定
@@ -39,31 +87,22 @@ namespace Valve2Pipe
 
         if (canparse == false)
         {
-          Console.Error.WriteLine("Command Line");
-          foreach (var arg in args)
-            Console.Error.WriteLine(arg);
-          Console.Error.WriteLine();
-          Console.Error.WriteLine("CmdLine Parse error");
+          Log.WriteLine("CommandLine Parse error");
+          Log.Close();
           Thread.Sleep(2 * 1000);
           return;
         }
       }
 
-
-      //カレントディレクトリ設定
-      string AppPath = System.Reflection.Assembly.GetExecutingAssembly().Location;
-      string AppDir = System.IO.Path.GetDirectoryName(AppPath);
-      Directory.SetCurrentDirectory(AppDir);
-
-
-      //  Setting_File
       Setting_File setting_file = Setting_File.LoadFile();
-
-      //Clientのマクロを設定
+      if (setting_file == null)
+      {
+        Console.Error.WriteLine("fail to read xml");
+        Thread.Sleep(2 * 1000);
+        return;
+      }
       Client.Macro_SrcPath = cmdline.SrcPath;
 
-
-      //Reader
       BinaryReader reader = null;
       {
         reader = SelectReaderWriter.GetReader(
@@ -73,11 +112,8 @@ namespace Valve2Pipe
 
         if (reader == null)
         {
-          Console.Error.WriteLine("Command Line");
-          foreach (var arg in args)
-            Console.Error.WriteLine(arg);
-          Console.Error.WriteLine();
-          Console.Error.WriteLine("no input");
+          Log.WriteLine("no input");
+          Log.Close();
           Thread.Sleep(2 * 1000);
           return;
         }
@@ -102,30 +138,36 @@ namespace Valve2Pipe
                                 multi,
                                 false);
         }
-
-
         //Encoder起動
-        var writer = new OutputWriter();
+        var writer = new Writer();
         int writer_pid = -1;
         {
-          var client = SelectReaderWriter.GetEncorderClinet(
-                                                cmdline.Mode_Stdout,          //標準出力から送信するモードか
-                                                cmdline.Profile,              //指定のプロフィール名
-                                                setting_file.PresetEncoder);  //設定ファイルのプロフィール一覧
-          writer.RegisterWriter(client);
-          writer.Timeout = TimeSpan.FromMilliseconds(-1);
-          writer_pid = (cmdline.Mode_Stdout) ? -1 : writer.GetPID_FirstWriter();
+          Log.WriteLine("[ Profile ]");
+          Log.WriteLine("    cmdline  : " + cmdline.Profile);
+          Log.WriteLine("  xml Profile");
+          var xml_profile = setting_file.PresetEncoder.Select(enc => enc.Name.Trim()).ToList();
+          foreach (string prf in xml_profile)
+            Log.WriteLine("             : " + prf);
 
-          if (writer.HasWriter == false)
+          var client = SelectReaderWriter.GetEncorderClinet(
+                                            cmdline.Mode_Stdout,          //標準出力から送信するモードか？
+                                            cmdline.Profile,              //指定のプロフィール名
+                                            setting_file.PresetEncoder);  //設定ファイルのプロフィール一覧
+          Log.WriteLine("[ RegisterClient ]");
+          writer.RegisterClient(client);
+          writer.Timeout = TimeSpan.FromMilliseconds(-1);
+          writer_pid = cmdline.Mode_Stdout ? -1 : writer.GetPID_FirstClient();
+
+
+          if (writer.HasClient == false)
           {
-            Console.Error.WriteLine("no output writer");
+            Log.WriteLine("no output writer");
+            Log.Close();
             Thread.Sleep(2 * 1000);
             return;
           }
         }
 
-
-        // SendSpeed
         SendSpeedManager sendSpeed;
         {
           int pid = writer_pid;
@@ -138,29 +180,27 @@ namespace Valve2Pipe
         //
         // 転送
         //
+        Log.WriteLine("transport");
         while (true)
         {
-          const int requestSize = 1024 * 100;                //１回の読込み量
-          //read
-          var readData = reader.ReadBytes(requestSize);
-          if (readData.Length == 0) break;                   //ファイル終端
+          const int requestSize = 1024 * 100;
+          var data = reader.ReadBytes(requestSize);
+          if (data.Length == 0) break;               //ファイル終端
+          sendSpeed.Update_and_Sleep(data.Length);
 
-          //送信速度　調整
-          sendSpeed.Update_and_Sleep(readData.Length);
-
-          //write
-          writer.WriteData(readData);
-          if (writer.HasWriter == false) break;
+          writer.Write(data);
+          if (writer.HasClient == false) break;
         }
         reader.Close();
         writer.Close();
-
+        Log.WriteLine("Close");
       }
       finally
       {
         //Semaphore解放
         if (waitForReady != null)
           waitForReady.Release();
+        Log.Close();
       }
 
     }

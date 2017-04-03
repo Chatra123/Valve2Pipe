@@ -15,28 +15,17 @@ namespace SplitVideo
 
   class Program
   {
-    //アプリパス
     private static readonly string
             AppPath = System.Reflection.Assembly.GetExecutingAssembly().Location,
             AppDir = Path.GetDirectoryName(AppPath);
-
-    //ファイルパス
     static string FFmpegPath, LSM_remuxerPath;
-
     static string TsPath, TsDir, TsName;
     static string AviPath, AviShortName, AviName, AviExt;
     static string CutAvi_ShortPath, CutAvi_Name;
-
     static string[] ExtList = { ".avi", ".mp4" };
-
 
     static void Main(string[] args)
     {
-      ////test args
-      //args = new string[] { @"E:\TS_PFDebug\n60s.ts" };
-      //args[0] = args[0].Trim();
-
-      //カレントディレクトリ
       Directory.SetCurrentDirectory(AppDir);
 
       //パス作成
@@ -48,11 +37,11 @@ namespace SplitVideo
         return;
       }
 
+      Wait(TsPath);
 
       //frame読
       var framePath = Path.Combine(TsDir, TsName + ".frame.txt");
       var frameList = Read_FrameFile(framePath);
-
       if (frameList == null)
       {
         Console.Error.WriteLine("invalid frameList");
@@ -60,33 +49,27 @@ namespace SplitVideo
         return;
       }
 
-
       //bat作成
       string batPath;
       {
         batPath = Path.Combine(TsDir, AviShortName + ".split_cat.bat");
-
         var textList = CreateBatText(frameList);
-
         //List<string>  →  string
         string batText = "";
         textList.ForEach((line) => { batText += line + Environment.NewLine; });
-
         //batはshift-jisで保存
         //UTF-8で保存すると実行時に日本語ファイルが取り扱えない。
         File.WriteAllText(batPath, batText, Encoding.GetEncoding("Shift_JIS"));
       }
 
       //Run bat
-      {
-        var prc = new Process();
-        prc.StartInfo.FileName = batPath;
-        prc.StartInfo.CreateNoWindow = true;
-        prc.StartInfo.UseShellExecute = false;
-        prc.Start();
-        prc.WaitForExit();
-        prc.Close();
-      }
+      var prc = new Process();
+      prc.StartInfo.FileName = batPath;
+      prc.StartInfo.CreateNoWindow = true;
+      prc.StartInfo.UseShellExecute = false;
+      prc.Start();
+      prc.WaitForExit();
+      prc.Close();
 
       //Delete bat
       try
@@ -105,7 +88,6 @@ namespace SplitVideo
     /// <summary>
     /// パス作成
     /// </summary>
-    /// <param name="args"></param>
     /// <returns>
     /// file check
     /// success →  null
@@ -113,7 +95,6 @@ namespace SplitVideo
     /// </returns>
     private static string MakePath(string[] args)
     {
-      //コマンドラインチェック
       if (args.Count() == 0)
       {
         return "not found args[0]";
@@ -129,18 +110,14 @@ namespace SplitVideo
         return "args[0] contains invalid charactor";
       }
 
-
       //ffmpeg
       FFmpegPath = Path.Combine(AppDir, "ffmpeg.exe");
-
       //remuxer
       LSM_remuxerPath = Path.Combine(AppDir, "remuxer.exe");
-
       //Ts
       TsPath = args[0];
       TsDir = Path.GetDirectoryName(TsPath);
       TsName = Path.GetFileNameWithoutExtension(TsPath);
-
       //Avi
       foreach (var ext in ExtList)
       {
@@ -154,22 +131,17 @@ namespace SplitVideo
         else
           AviPath = "not found";
       }
-
       AviName = TsName;
 
       //ShortName  作業用のファイル名
       string timecode = DateTime.Now.ToString("mmssff");
       string pid = Process.GetCurrentProcess().Id.ToString();
-
       AviShortName = new Regex("[ $|()^　]").Replace(TsName, "_");      //batの特殊文字　置換
       AviShortName = (5 < AviShortName.Length) ? AviShortName.Substring(0, 5) : AviShortName;
       AviShortName = AviShortName + "_" + timecode + "_" + pid;
-
-
       //cat video
       CutAvi_ShortPath = Path.Combine(TsDir, AviShortName + ".cut" + AviExt);
       CutAvi_Name = TsName + ".cut" + AviExt;
-
       //show path
       Console.Error.WriteLine("TsPath    =" + TsPath);
       Console.Error.WriteLine("AviPath   =" + AviPath);
@@ -177,7 +149,6 @@ namespace SplitVideo
       Console.Error.WriteLine();
       Console.Error.WriteLine();
 
-      //ファイルチェック
       //  Video
       if (File.Exists(AviPath) == false)
       {
@@ -188,10 +159,45 @@ namespace SplitVideo
       {
         return "not found FFmpeg";
       }
-
       //all OK
       return null;
     }
+
+
+    /// <summary>
+    /// ファイルが書き込み可能になるまで待機
+    /// <summary>
+    private static void Wait(string filepath)
+    {
+      Console.Error.WriteLine("Wait");
+      Console.Error.WriteLine("filepath = " + filepath);
+
+      //TSファイルを扱う他のプロセスが終了するまで待機。
+      //FileShare.Noneで開ければ、LGLancherの処理が終わったとみなす。
+      int count = 0;
+      while (true)
+      {
+        Thread.Sleep(1000 * 30);
+
+        if (File.Exists(filepath) == false)
+          break;
+        try
+        {
+          var fstream = new FileStream(filepath, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+          fstream.Close();
+          count++;
+          Console.Error.WriteLine("get count = " + count);
+          if (3 <= count) break;
+        }
+        catch
+        {
+          Console.Error.WriteLine("fail get ");
+          count = 0;
+          continue;
+        }
+      }
+    }
+
 
 
     /// <summary>
@@ -228,13 +234,11 @@ namespace SplitVideo
         for (int i = 0; i < batText.Count; i++)
         {
           var line = batText[i];
-
           //FFmpeg  L-Smash remuxer
           {
             line = Regex.Replace(line, @"\$ffmpeg\$", FFmpegPath, RegexOptions.IgnoreCase);
             line = Regex.Replace(line, @"\$remuxer\$", LSM_remuxerPath, RegexOptions.IgnoreCase);
           }
-
           //input
           {
             line = Regex.Replace(line, @"\$PartCount\$", "" + PartCount, RegexOptions.IgnoreCase);
@@ -246,14 +250,12 @@ namespace SplitVideo
             line = Regex.Replace(line, @"\$CutAvi_ShortPath\$", CutAvi_ShortPath, RegexOptions.IgnoreCase);
             line = Regex.Replace(line, @"\$CutAvi_Name\$", CutAvi_Name, RegexOptions.IgnoreCase);
           }
-
           //part LineBlocker
           for (int partNo = 1; partNo <= PartCount; partNo++)
           {
             string lineBlocker = "::part" + partNo + "::";
             line = Regex.Replace(line, lineBlocker, "", RegexOptions.IgnoreCase);
           }
-
           //BeginSec
           for (int partNo = 1; partNo <= PartCount; partNo++)
           {
@@ -265,7 +267,6 @@ namespace SplitVideo
             line = Regex.Replace(line, end_sec, "" + EndSec[idx], RegexOptions.IgnoreCase);
             line = Regex.Replace(line, duration_sec, "" + DurationSec[idx], RegexOptions.IgnoreCase);
           }
-
           batText[i] = line;
         }
       }

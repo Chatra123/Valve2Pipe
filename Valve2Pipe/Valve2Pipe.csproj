@@ -47,7 +47,7 @@
     <Compile Include="LGLauncher\MutexControl.cs" />
     <Compile Include="SendSpeedManager.cs" />
     <Compile Include="ReaderWriter\SelectReaderWriter.cs" />
-    <Compile Include="ReaderWriter\OutputWriter.cs" />
+    <Compile Include="ReaderWriter\Writer.cs" />
     <Compile Include="Exception\ExceptionInfo.cs" />
     <Compile Include="LGLauncher\WaitForSystemReady.cs" />
     <Compile Include="Client\Client.cs" />
