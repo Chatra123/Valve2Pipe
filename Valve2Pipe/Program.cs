@@ -83,9 +83,8 @@ namespace Valve2Pipe
       Setting_CmdLine cmdline = null;
       {
         cmdline = new Setting_CmdLine();
-        var canparse = cmdline.Parse(args);
-
-        if (canparse == false)
+        var get_cmdline = cmdline.Parse(args);
+        if (get_cmdline == false)
         {
           Log.WriteLine("CommandLine Parse error");
           Log.Close();
