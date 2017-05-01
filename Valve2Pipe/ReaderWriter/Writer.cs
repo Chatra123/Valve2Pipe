@@ -19,10 +19,6 @@ namespace Valve2Pipe
     /// <summary>
     /// 閉じる
     /// </summary>
-    ~Writer()
-    {
-      Close();
-    }
     public void Close()
     {
       if (HasClient)
@@ -33,6 +29,10 @@ namespace Valve2Pipe
           client.Process.WaitForExit(3 * 1000);
           System.Threading.Thread.Sleep(500);
         }
+    }
+    ~Writer()
+    {
+      Close();
     }
 
 
@@ -49,7 +49,7 @@ namespace Valve2Pipe
 
 
     /// <summary>
-    /// ライター登録、実行
+    /// Client登録、実行
     /// </summary>
     public void RegisterClient(List<Client_WriteStdin> clientList)
     {
@@ -121,7 +121,6 @@ namespace Valve2Pipe
 
       //Timeout -1ms以外の負数だと例外がでる。-1secはダメ
       Timeout = 0 <= Timeout.TotalSeconds ? Timeout : TimeSpan.FromMilliseconds(-1);
-      //全タスクが完了するまで待機
       Task.WaitAll(tasklist.ToArray(), Timeout);
 
 
@@ -136,6 +135,8 @@ namespace Valve2Pipe
             var client = (Client_WriteStdin)task.AsyncState;
             client.StdinWriter.Close();
             ClientList.Remove(client);
+            Log.WriteLine("  /▽ Fail to write :  {0} ▽/  "+ client.FileName);
+            Log.WriteLine();
           }
         }
         else
