@@ -39,7 +39,7 @@ namespace SplitVideo
 
       Wait(TsPath);
 
-      //frame読
+      //読
       var framePath = Path.Combine(TsDir, TsName + ".frame.txt");
       var frameList = Read_FrameFile(framePath);
       if (frameList == null)
@@ -58,7 +58,7 @@ namespace SplitVideo
         string batText = "";
         textList.ForEach((line) => { batText += line + Environment.NewLine; });
         //batはshift-jisで保存
-        //UTF-8で保存すると実行時に日本語ファイルが取り扱えない。
+        //  UTF-8で保存すると実行時に日本語ファイルが取り扱えない。
         File.WriteAllText(batPath, batText, Encoding.GetEncoding("Shift_JIS"));
       }
 
@@ -110,15 +110,13 @@ namespace SplitVideo
         return "args[0] contains invalid charactor";
       }
 
-      //ffmpeg
+
       FFmpegPath = Path.Combine(AppDir, "ffmpeg.exe");
-      //remuxer
       LSM_remuxerPath = Path.Combine(AppDir, "remuxer.exe");
-      //Ts
+
       TsPath = args[0];
       TsDir = Path.GetDirectoryName(TsPath);
       TsName = Path.GetFileNameWithoutExtension(TsPath);
-      //Avi
       foreach (var ext in ExtList)
       {
         string path = Path.Combine(TsDir, TsName + ext);
@@ -139,22 +137,20 @@ namespace SplitVideo
       AviShortName = new Regex("[ $|()^　]").Replace(TsName, "_");      //batの特殊文字　置換
       AviShortName = (5 < AviShortName.Length) ? AviShortName.Substring(0, 5) : AviShortName;
       AviShortName = AviShortName + "_" + timecode + "_" + pid;
-      //cat video
       CutAvi_ShortPath = Path.Combine(TsDir, AviShortName + ".cut" + AviExt);
       CutAvi_Name = TsName + ".cut" + AviExt;
-      //show path
+
       Console.Error.WriteLine("TsPath    =" + TsPath);
       Console.Error.WriteLine("AviPath   =" + AviPath);
       Console.Error.WriteLine("ShortName =" + AviShortName);
       Console.Error.WriteLine();
       Console.Error.WriteLine();
 
-      //  Video
+      //file check
       if (File.Exists(AviPath) == false)
       {
         return "not found Video";
       }
-      //　FFmpeg
       if (File.Exists(FFmpegPath) == false)
       {
         return "not found FFmpeg";
@@ -169,11 +165,11 @@ namespace SplitVideo
     /// <summary>
     private static void Wait(string filepath)
     {
-      Console.Error.WriteLine("Wait");
+      Console.Error.WriteLine("Wait...");
       Console.Error.WriteLine("filepath = " + filepath);
 
       //TSファイルを扱う他のプロセスが終了するまで待機。
-      //FileShare.Noneで開ければ、LGLancherの処理が終わったとみなす。
+      //FileShare.Noneで開ければ LGLancherの処理が終わったとみなす。
       int count = 0;
       while (true)
       {
@@ -191,7 +187,7 @@ namespace SplitVideo
         }
         catch
         {
-          Console.Error.WriteLine("fail get ");
+          Console.Error.WriteLine("fail share open ");
           count = 0;
           continue;
         }
@@ -201,7 +197,7 @@ namespace SplitVideo
 
 
     /// <summary>
-    /// フレームリスト　→　バッチテキスト
+    /// フレームリスト　-->　バッチテキスト
     /// <summary>
     private static List<string> CreateBatText(List<int> frameList)
     {
@@ -223,38 +219,36 @@ namespace SplitVideo
         EndSec.Add((int)endSec);
         DurationSec.Add((int)durSec);
       }
-
       //バッチテキスト
       var batText = new List<string>();
       {
-        //Resource読込み
-        batText = FileR.ReadFromResource("SplitVideo.Resource.SplitVideo.bat");
+        //読
+        batText = TextR.ReadFromResource("SplitVideo.Resource.SplitVideo.bat");
 
-        //置換
         for (int i = 0; i < batText.Count; i++)
         {
           var line = batText[i];
           //FFmpeg  L-Smash remuxer
           {
-            line = Regex.Replace(line, @"\$ffmpeg\$", FFmpegPath, RegexOptions.IgnoreCase);
-            line = Regex.Replace(line, @"\$remuxer\$", LSM_remuxerPath, RegexOptions.IgnoreCase);
+            line = Regex.Replace(line, @"\$ffmpeg\$", FFmpegPath);
+            line = Regex.Replace(line, @"\$remuxer\$", LSM_remuxerPath);
           }
           //input
           {
-            line = Regex.Replace(line, @"\$PartCount\$", "" + PartCount, RegexOptions.IgnoreCase);
-            line = Regex.Replace(line, @"\$ext\$", AviExt, RegexOptions.IgnoreCase);
-            line = Regex.Replace(line, @"\$AviPath\$", AviPath, RegexOptions.IgnoreCase);
-            line = Regex.Replace(line, @"\$AviShort\$", AviShortName, RegexOptions.IgnoreCase);
-            line = Regex.Replace(line, @"\$AviName\$", AviName, RegexOptions.IgnoreCase);
+            line = Regex.Replace(line, @"\$PartCount\$", "" + PartCount);
+            line = Regex.Replace(line, @"\$ext\$", AviExt);
+            line = Regex.Replace(line, @"\$AviPath\$", AviPath);
+            line = Regex.Replace(line, @"\$AviShort\$", AviShortName);
+            line = Regex.Replace(line, @"\$AviName\$", AviName);
             //Rename CutAvi
-            line = Regex.Replace(line, @"\$CutAvi_ShortPath\$", CutAvi_ShortPath, RegexOptions.IgnoreCase);
-            line = Regex.Replace(line, @"\$CutAvi_Name\$", CutAvi_Name, RegexOptions.IgnoreCase);
+            line = Regex.Replace(line, @"\$CutAvi_ShortPath\$", CutAvi_ShortPath);
+            line = Regex.Replace(line, @"\$CutAvi_Name\$", CutAvi_Name);
           }
           //part LineBlocker
           for (int partNo = 1; partNo <= PartCount; partNo++)
           {
             string lineBlocker = "::part" + partNo + "::";
-            line = Regex.Replace(line, lineBlocker, "", RegexOptions.IgnoreCase);
+            line = Regex.Replace(line, lineBlocker, "");
           }
           //BeginSec
           for (int partNo = 1; partNo <= PartCount; partNo++)
@@ -263,9 +257,9 @@ namespace SplitVideo
             string begin_sec = @"\$BeginSecP" + partNo + @"\$";
             string end_sec = @"\$EndSecP" + partNo + @"\$";
             string duration_sec = @"\$DurSecP" + partNo + @"\$";
-            line = Regex.Replace(line, begin_sec, "" + BeginSec[idx], RegexOptions.IgnoreCase);
-            line = Regex.Replace(line, end_sec, "" + EndSec[idx], RegexOptions.IgnoreCase);
-            line = Regex.Replace(line, duration_sec, "" + DurationSec[idx], RegexOptions.IgnoreCase);
+            line = Regex.Replace(line, begin_sec, "" + BeginSec[idx]);
+            line = Regex.Replace(line, end_sec, "" + EndSec[idx]);
+            line = Regex.Replace(line, duration_sec, "" + DurationSec[idx]);
           }
           batText[i] = line;
         }
@@ -284,11 +278,10 @@ namespace SplitVideo
     /// </returns>
     public static List<int> Read_FrameFile(string framePath)
     {
-      //check
       if (File.Exists(framePath) == false) return null;
 
       //読
-      var text = FileR.ReadAllLines(framePath);
+      var text = TextR.ReadAllLines(framePath);
       if (text == null) return null;
 
       //コメント削除、トリム
@@ -301,7 +294,6 @@ namespace SplitVideo
         })
         .Where((line) => string.IsNullOrWhiteSpace(line) == false)    //空白行削除
         .ToList();
-
 
       //List<string>  -->  List<int>
       List<int> frameList;
@@ -319,7 +311,6 @@ namespace SplitVideo
       if (frameList.Count % 2 == 1) return null;
       return frameList;
     }
-
 
 
 

@@ -43,7 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Text\FileRW.cs" />
+    <Compile Include="TextRW.cs" />
     <EmbeddedResource Include="Resource\SplitVideo.bat" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

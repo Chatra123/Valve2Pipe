@@ -79,7 +79,6 @@ namespace Valve2Pipe
 
 
       //設定
-      //  Setting_CmdLine
       Setting_CmdLine cmdline = null;
       {
         cmdline = new Setting_CmdLine();
@@ -127,7 +126,7 @@ namespace Valve2Pipe
         {
           int multi = setting_file.Encoder_MultipleRun;
           var encorderNames = setting_file.EncoderNames
-                                          .Split()                        //スペースで分割
+                                          .Split()
                                           .Where(ext => string.IsNullOrWhiteSpace(ext) == false)
                                           .Distinct()
                                           .ToList();
@@ -157,7 +156,6 @@ namespace Valve2Pipe
           writer.Timeout = TimeSpan.FromMilliseconds(-1);
           writer_pid = cmdline.Mode_Stdout ? -1 : writer.GetPID_FirstClient();
 
-
           if (writer.HasClient == false)
           {
             Log.WriteLine("no output writer");
@@ -176,15 +174,14 @@ namespace Valve2Pipe
           sendSpeed = new SendSpeedManager(pid, prc_CPU, sys_CPU, limit);
         }
 
-        //
         // 転送
-        //
         Log.WriteLine("transport");
         while (true)
         {
           const int requestSize = 1024 * 100;
           var data = reader.ReadBytes(requestSize);
-          if (data.Length == 0) break;               //ファイル終端
+          if (data.Length == 0)
+            break;   //ファイル終端
           sendSpeed.Update_and_Sleep(data.Length);
 
           writer.Write(data);
