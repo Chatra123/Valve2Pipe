@@ -38,14 +38,14 @@ namespace Valve2Pipe
     DateTime tickBeginTime;                      //計測開始時間
 
     SIM.BlackProcessChecker blackChecker = null;
-    SIM.ProcessBusyChecker busyChecker = null;
+    SIM.BusyProcessChecker busyChecker = null;
     DateTime timeCheckBlack, timeCheckBusy;
 
     /// <summary>
     /// SystemChecker初期化
     /// </summary>
-    public SendSpeedManager(int target_pid,
-                            int process_cpu_max, int system_cpu_max,
+    public SendSpeedManager(int sys_cpu_max,
+                            int prc_cpu_max, int prc_pid,
                             double limit_MiBsec)
     {
       //BlackProcessChecker
@@ -59,15 +59,14 @@ namespace Valve2Pipe
         }
         //ブラックリスト読込み
         var SIM_setting = new SIM.Setting_File();
-        SIM_setting.Load(blacklistPath,
-                         V2P_Text.Default);
+        SIM_setting.Load(blacklistPath, V2P_Text.Default);
         blackChecker = new SIM.BlackProcessChecker(SIM_setting.ProcessList);
       }
 
-      //ProcessBusyChecker
-      //target_pid = -1 なら process_CPUに関しては評価されない。
-      busyChecker = new SIM.ProcessBusyChecker(target_pid, process_cpu_max, system_cpu_max);
-      //Max_SendLimit  Byte/sec
+      //BusyProcessChecker
+      //prc_pid = -1 ならProcessのＣＰＵ使用率は評価しない。
+      busyChecker = new SIM.BusyProcessChecker(sys_cpu_max, prc_cpu_max, prc_pid);
+      //Byte/sec
       Max_SendLimit = 0 < limit_MiBsec
                       ? limit_MiBsec * 1024 * 1024
                       : 0;
@@ -151,7 +150,9 @@ namespace Valve2Pipe
           //////log4net
           ////int sleep = (int)(200 - tickDuration);
           ////log.Info("        sleep = " + sleep);
-          Thread.Sleep((int)(200 - elapse));
+          int sleep = (int)(200 - elapse);
+          sleep = 0 <= sleep ? sleep : 0;
+          Thread.Sleep(sleep);
         }
       }
 

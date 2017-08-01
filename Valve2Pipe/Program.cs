@@ -26,8 +26,8 @@ namespace Valve2Pipe
       try
       {
         var logfile = new FileInfo(filename);
-        bool append = logfile.Exists && logfile.Length <= 64 * 1024;  //64 KB 以下なら追記
-        var writer = new StreamWriter(filename, append, Encoding.UTF8);   //UTF-8 bom
+        bool append = logfile.Exists && logfile.Length <= 64 * 1024;    //64 KB 以下なら追記
+        var writer = new StreamWriter(filename, append, Encoding.UTF8); //UTF-8 bom
         return writer;
       }
       catch
@@ -39,7 +39,8 @@ namespace Valve2Pipe
 
     public static void WriteLine(string line = "")
     {
-      if (Enable == false) return;
+      if (Enable == false)
+        return;
       Console.Error.WriteLine(line);
       if (writer != null)
         writer = CreateWriter("log.txt");
@@ -167,11 +168,11 @@ namespace Valve2Pipe
 
         SendSpeedManager sendSpeed;
         {
-          int pid = writer_pid;
-          int prc_CPU = setting_file.Encoder_CPU_Max;
           int sys_CPU = setting_file.System__CPU_Max;
+          int prc_CPU = setting_file.Encoder_CPU_Max;
+          int pid = writer_pid;
           double limit = setting_file.ReadLimit_MiBsec;
-          sendSpeed = new SendSpeedManager(pid, prc_CPU, sys_CPU, limit);
+          sendSpeed = new SendSpeedManager(sys_CPU, prc_CPU, pid, limit);
         }
 
         // 転送
@@ -185,7 +186,8 @@ namespace Valve2Pipe
           sendSpeed.Update_and_Sleep(data.Length);
 
           writer.Write(data);
-          if (writer.HasClient == false) break;
+          if (writer.HasClient == false)
+            break;
         }
         reader.Close();
         writer.Close();
